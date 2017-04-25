@@ -23,14 +23,96 @@ function gridInit(x, y) {
 }
 
 gridInit(5, 5);
-console.log(grid);
+
 function WalkGrid(props) {
     const grid = props.grid;
-    const rows = grid.map(row => (
-        <div className="row" key={row.toString()}>
-            {row.map(space => <div className="space" key={space.toString()} />)}
-        </div>
-    ));
+    const rows = grid.map(function(row) {
+        return (
+            <div className="row" key={row.toString()}>
+                {row.map(function(square) {
+                    return (
+                        <Space
+                            coords={square.toString()}
+                            key={square.toString()}
+                        />
+                    );
+                })}
+            </div>
+        );
+    });
     return <div> {rows} </div>;
 }
+
+class Space extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { active: false };
+        this.handleClick = this.handleClick.bind(this);
+    }
+    handleClick() {
+        console.log(`Coords: ${this.props.coords}`);
+        this.setState(prevState => ({
+            active: !prevState.active
+        }));
+    }
+    render() {
+        let active = this.state.active;
+        let classes = `space ${active ? "active" : ""}`;
+        return <div onClick={this.handleClick} className={classes} />;
+    }
+}
+
+class Row extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        this.props.row.map(console.log(this));
+    }
+}
+
+// class Row extends React.Component {
+//     constructor(props) {
+//         super(props);
+//     }
+//     render() {
+//         return (
+//             <div className="row" key={row.toString()}>
+//                 {row.map(space => (
+//                     <div
+//                         onClick={props.onClick}
+//                         className="Space"
+//                         key={space.toString()}
+//                     />
+//                 ))}
+
+//             </div>
+//         );
+//     }
+// }
+// class WalkGrid extends React.Component {
+//     constructor(props) {
+//         super(props);
+//         this.state = { active: false };
+//         this.handleToggleClick = this.handleToggleClick.bind(this);
+//     }
+//     handleToggleClick() {
+//         this.setState(prevState => ({
+//             active: !prevState.active
+//         }));
+//     }
+//     render() {
+//         return <div> {grid.map(Row.render)} </div>;
+//     }
+// }
+//
+//
+//*****************What <Space> was previously
+// (
+//     <div
+//         onClick={props.onClick}
+//         className="space"
+//         key={space.toString()}
+//     />
+// ))
 ReactDOM.render(<WalkGrid grid={grid} />, document.getElementById("root"));
