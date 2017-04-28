@@ -16,47 +16,132 @@ function gridInit(x, y) {
     for (let i = 0; i < x; i++) {
         let yArray = [];
         for (let j = 0; j < y; j++) {
-            yArray.push(`${i}${j}`);
+            yArray.push(`${i},${j}`);
         }
         grid.push(yArray);
     }
 }
 
 gridInit(5, 5);
+class App extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+}
 
-function WalkGrid(props) {
-    const grid = props.grid;
-    const rows = grid.map(function(row) {
+//Perhaps something like a this.state = { characters: [[x,y], [x,y]...] }
+//And then iterative conditional formatting to set active
+//like, if (coords in characters) { class = active}
+//
+//General purpose stepping functions
+class WalkGrid extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { coords: [2, 2] };
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.toggleActive = this.toggleActive.bind(this);
+    }
+    toggleActive() {
+        this.setState(prevState => ({
+            active: !prevState.active
+        }));
+    }
+    handleKeyPress(event) {
+        if (event.key == "ArrowUp") {
+            let newCoords = this.state.coords;
+            newCoords[0]--;
+            this.setState(prevState => ({
+                coords: newCoords
+            }));
+        }
+        if (event.key == "ArrowDown") {
+            let newCoords = this.state.coords;
+            newCoords[0]++;
+            this.setState(prevState => ({
+                coords: newCoords
+            }));
+        }
+        if (event.key == "ArrowLeft") {
+            let newCoords = this.state.coords;
+            newCoords[1]--;
+            this.setState(prevState => ({
+                coords: newCoords
+            }));
+        }
+        if (event.key == "ArrowRight") {
+            let newCoords = this.state.coords;
+            newCoords[1]++;
+            this.setState(prevState => ({
+                coords: newCoords
+            }));
+        }
+        // event.persist();
+        // const test = event;
+        // this.setState(prevState => ({
+        //     active: !prevState.active
+        // }));
+    }
+    componentWillMount() {
+        window.addEventListener("keypress", this.handleKeyPress);
+    }
+    componentWillUnmount() {
+        window.removeEventListener("keypress", this.handleKeyPress);
+    }
+    render() {
+        const grid = this.props.grid;
+        let coords = this.state.coords;
+        const rows = grid.map(function(row) {
+            return (
+                <div className="row" key={row.toString()}>
+                    {row.map(function(square) {
+                        let active = false;
+                        if (square.toString() == coords.toString()) {
+                            active = true;
+                        }
+                        return (
+                            <div key={square.toString() + "parent"}>
+                                <Space
+                                    key={square.toString()}
+                                    active={active}
+                                />
+                            </div>
+                        );
+                    })}
+                </div>
+            );
+        });
         return (
-            <div className="row" key={row.toString()}>
-                {row.map(function(square) {
-                    return (
-                        <Space
-                            coords={square.toString()}
-                            key={square.toString()}
-                        />
-                    );
-                })}
-            </div>
+            //Tab index seems to be pretty important here
+            <div> {rows} </div>
         );
-    });
-    return <div> {rows} </div>;
+    }
 }
 
 class Space extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { active: false };
+        // this.state = { active: false };
         this.handleClick = this.handleClick.bind(this);
+        // this.handleKeyPress = this.handleKeyPress.bind(this);
     }
     handleClick() {
-        console.log(`Coords: ${this.props.coords}`);
         this.setState(prevState => ({
             active: !prevState.active
         }));
     }
+    handleChange(event) {
+        this.props.onActiveChange(event.targetvalue);
+    }
+    // handleKeyPress(event) {
+    //     event.persist();
+    //     const test = event;
+    //     console.log("keypress");
+    //     this.setState(prevState => ({
+    //         active: !prevState.active
+    //     }));
+    // }
     render() {
-        let active = this.state.active;
+        const active = this.props.active;
         let classes = `space ${active ? "active" : ""}`;
         return <div onClick={this.handleClick} className={classes} />;
     }
@@ -71,42 +156,24 @@ class Row extends React.Component {
     }
 }
 
-// class Row extends React.Component {
-//     constructor(props) {
-//         super(props);
-//     }
-//     render() {
+// function WalkGrid(props) {//{{{
+//     const grid = props.grid;
+//     const rows = grid.map(function(row) {
 //         return (
 //             <div className="row" key={row.toString()}>
-//                 {row.map(space => (
-//                     <div
-//                         onClick={props.onClick}
-//                         className="Space"
-//                         key={space.toString()}
-//                     />
-//                 ))}
-
+//                 {row.map(function(square) {
+//                     return (
+//                         <Space
+//                             coords={square.toString()}
+//                             key={square.toString()}
+//                         />
+//                     );
+//                 })}
 //             </div>
 //         );
-//     }
+//     });
+//     return <div> {rows} </div>;
 // }
-// class WalkGrid extends React.Component {
-//     constructor(props) {
-//         super(props);
-//         this.state = { active: false };
-//         this.handleToggleClick = this.handleToggleClick.bind(this);
-//     }
-//     handleToggleClick() {
-//         this.setState(prevState => ({
-//             active: !prevState.active
-//         }));
-//     }
-//     render() {
-//         return <div> {grid.map(Row.render)} </div>;
-//     }
-// }
-//
-//
 //*****************What <Space> was previously
 // (
 //     <div
@@ -114,5 +181,5 @@ class Row extends React.Component {
 //         className="space"
 //         key={space.toString()}
 //     />
-// ))
+// ))//}}}
 ReactDOM.render(<WalkGrid grid={grid} />, document.getElementById("root"));
