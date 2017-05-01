@@ -8,6 +8,9 @@
 .row {
     display: flex;
 }
+.food {
+    background-color: green;
+}
 .active {
     background-color: blue;
 }
