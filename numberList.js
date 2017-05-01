@@ -1,6 +1,14 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
+//Plans:
+//I want to be able to set the grid size in the browser
+//I want to be able to set the grid size dynamically
+//I want the active square to be set somewhere in the middle of the dynamically set grid size
+//
+//I want to be able to have multiple 'character' squares
+//I want to use more than one key to perform an action
+//
 function NumberList(props) {
     const numbers = props.numbers;
     const listItems = numbers.map(number => (
@@ -22,7 +30,7 @@ function gridInit(x, y) {
     }
 }
 
-gridInit(5, 5);
+gridInit(9, 9);
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -37,9 +45,21 @@ class App extends React.Component {
 class WalkGrid extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { coords: [2, 2] };
+        const playerOneStart = [
+            parseInt(grid.length / 2),
+            parseInt(grid[1].length / 2)
+        ];
+        const playerTwoStart = [
+            parseInt(grid.length / 2),
+            parseInt(grid[1].length / 2)
+        ];
+        this.state = {
+            playerOneCoords: playerOneStart,
+            playerTwoCoords: playerTwoStart
+        };
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.toggleActive = this.toggleActive.bind(this);
+        const config = [];
     }
     toggleActive() {
         this.setState(prevState => ({
@@ -48,38 +68,17 @@ class WalkGrid extends React.Component {
     }
     handleKeyPress(event) {
         if (event.key == "ArrowUp") {
-            let newCoords = this.state.coords;
-            newCoords[0]--;
-            this.setState(prevState => ({
-                coords: newCoords
-            }));
+            this.setState(moveSquare(this.state, "playerOneCoords", "up"));
         }
         if (event.key == "ArrowDown") {
-            let newCoords = this.state.coords;
-            newCoords[0]++;
-            this.setState(prevState => ({
-                coords: newCoords
-            }));
+            this.setState(moveSquare(this.state, "playerOneCoords", "down"));
         }
         if (event.key == "ArrowLeft") {
-            let newCoords = this.state.coords;
-            newCoords[1]--;
-            this.setState(prevState => ({
-                coords: newCoords
-            }));
+            this.setState(moveSquare(this.state, "playerOneCoords", "left"));
         }
         if (event.key == "ArrowRight") {
-            let newCoords = this.state.coords;
-            newCoords[1]++;
-            this.setState(prevState => ({
-                coords: newCoords
-            }));
+            this.setState(moveSquare(this.state, "playerOneCoords", "right"));
         }
-        // event.persist();
-        // const test = event;
-        // this.setState(prevState => ({
-        //     active: !prevState.active
-        // }));
     }
     componentWillMount() {
         window.addEventListener("keypress", this.handleKeyPress);
@@ -89,12 +88,13 @@ class WalkGrid extends React.Component {
     }
     render() {
         const grid = this.props.grid;
-        let coords = this.state.coords;
+        let coords = this.state.playerOneCoords;
         const rows = grid.map(function(row) {
             return (
                 <div className="row" key={row.toString()}>
                     {row.map(function(square) {
                         let active = false;
+                        // I should figure out a way to use this with multiple squares simultaneously
                         if (square.toString() == coords.toString()) {
                             active = true;
                         }
@@ -110,19 +110,14 @@ class WalkGrid extends React.Component {
                 </div>
             );
         });
-        return (
-            //Tab index seems to be pretty important here
-            <div> {rows} </div>
-        );
+        return <div> {rows} </div>;
     }
 }
 
 class Space extends React.Component {
     constructor(props) {
         super(props);
-        // this.state = { active: false };
         this.handleClick = this.handleClick.bind(this);
-        // this.handleKeyPress = this.handleKeyPress.bind(this);
     }
     handleClick() {
         this.setState(prevState => ({
@@ -132,14 +127,6 @@ class Space extends React.Component {
     handleChange(event) {
         this.props.onActiveChange(event.targetvalue);
     }
-    // handleKeyPress(event) {
-    //     event.persist();
-    //     const test = event;
-    //     console.log("keypress");
-    //     this.setState(prevState => ({
-    //         active: !prevState.active
-    //     }));
-    // }
     render() {
         const active = this.props.active;
         let classes = `space ${active ? "active" : ""}`;
