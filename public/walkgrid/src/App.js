@@ -4,10 +4,11 @@ import logo from "./logo.svg";
 import "./App.css";
 import "./main.css";
 // eslint-disable-next-line
-import { coordCheckInit, moveSquare } from "./stateChanges.js";
+import { nonPlayerCoordsInit, moveSquare } from "./stateChanges.js";
 // eslint-disable-next-line
 import WalkGrid from "./walkGrid.js";
-const { Map } = require("immutable");
+// eslint-disable-next-line
+const { Map, List, fromJS } = require("immutable");
 const map1 = Map({ a: 1, b: 2, c: 3 });
 const map2 = map1.set("b", 50);
 map1.get("b"); // 2
@@ -35,9 +36,7 @@ gridInit(25, 25);
 const gridHeight = grid.length;
 let occupied = [];
 for (let i = 0; i < gridHeight; i += 1) {
-    occupied.push(
-        [getRandomInt(0, gridHeight), getRandomInt(0, gridHeight)].toString()
-    );
+    occupied.push([getRandomInt(0, gridHeight), getRandomInt(0, gridHeight)]);
 }
 
 class App extends Component {
@@ -50,7 +49,7 @@ class App extends Component {
                 </div>
                 <WalkGrid
                     grid={grid}
-                    occupied={occupied}
+                    occupied={fromJS(occupied)}
                     gridHeight={gridHeight}
                 />
             </div>

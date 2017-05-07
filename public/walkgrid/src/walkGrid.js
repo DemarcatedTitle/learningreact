@@ -2,7 +2,7 @@
 // eslint-disable-next-line
 import React from "react";
 // eslint-disable-next-line
-import { coordCheckInit, moveSquare } from "./stateChanges.js";
+import { nonPlayerCoordsInit, moveSquare } from "./stateChanges.js";
 // eslint-disable-next-line
 import { List, fromJS } from "immutable";
 /* eslint-disable no-console */
@@ -32,18 +32,21 @@ class WalkGrid extends React.Component {
             [playerOneStart, [14, 14]],
             [playerTwoStart]
         ]);
-        let coordCheck = startingPoints.flatten(1);
+        let nonPlayerCoords = startingPoints.flatten(1);
         this.state = {
             coords: startingPoints,
-            coordCheck: coordCheck
-            // coordCheck
+            nonPlayerCoords: nonPlayerCoords,
+            occupied: this.props.occupied
+            // nonPlayerCoords
         };
-        // this.setState({ coordCheck: coordCheckInit(this.state) });
+        // this.setState({ nonPlayerCoords: nonPlayerCoordsInit(this.state) });
         this.handleKeyPress = this.handleKeyPress.bind(this);
     }
     handleKeyPress(event) {
         if (event.key === " ") {
-            console.log(`coordCheck ${this.state.coordCheck.join(",")}`);
+            console.log(
+                `nonPlayerCoords ${this.state.nonPlayerCoords.join(",")}`
+            );
         }
         if (event.key === "ArrowUp") {
             this.setState(moveSquare(this.state, 0, "up"));
@@ -94,7 +97,7 @@ class WalkGrid extends React.Component {
                     grid={this.props.grid}
                     occupied={this.props.occupied}
                     coords={coords}
-                    coordCheck={this.state.coordCheck}
+                    nonPlayerCoords={this.state.nonPlayerCoords}
                 />
             </div>
         );
@@ -117,7 +120,7 @@ class AnnouncementBox extends React.PureComponent {
         let classes = `${outOfBounds ? "outOfBounds" : ""}`;
         return (
             <div className={classes}>
-                {`Player ${this.props.player.name} Coordinates: ${this.props.player.coords.toString()}  ${isOutOfBounds}`}
+                {`Player ${this.props.player.name} Coordinates: ${this.props.player.coords.join(",")}  ${isOutOfBounds}`}
             </div>
         );
     }
@@ -141,23 +144,23 @@ class Rows extends React.PureComponent {
     }
     render() {
         const coords = this.props.coords;
-        const coordCheck = this.props.coordCheck;
+        const nonPlayerCoords = this.props.nonPlayerCoords;
         const flatterCoords = coords.flatten(1);
         const occupied = this.props.occupied;
         let grid = fromJS(this.props.grid);
         const rows = grid.map(function(row) {
-            // if (occupied.includes(square.toString())) {
-            //     food = true;
-            // }
             return (
                 <div className="row" key={row.toString()}>
 
                     {row.map(function(square) {
                         let active = false;
                         let food = false;
+                        if (occupied.includes(square)) {
+                            food = true;
+                        }
                         if (
                             flatterCoords.includes(square) ||
-                            coordCheck.includes(square)
+                            nonPlayerCoords.includes(square)
                         ) {
                             active = true;
                         }

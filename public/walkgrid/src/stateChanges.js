@@ -3,7 +3,7 @@
 //There *has* to be a faster way to do this that doesn't involve two maps, but this works
 //And I will use it for now
 import { List, fromJS } from "immutable";
-const coordCheckInit = coords => {
+const nonPlayerCoordsInit = coords => {
     // eslint-disable-next-line
     let newLocationList = coords.map(function(currentPlayer) {
         currentPlayer.map(function(currentCoord) {
@@ -14,7 +14,6 @@ const coordCheckInit = coords => {
     return fromJS(newLocationList);
 };
 const moveSquare = (state, player, direction) => {
-    let newCoords = state.coords.get(player).get(0);
     let listCoords = state.coords;
     const whichWay = {
         up: function() {
@@ -42,12 +41,13 @@ const moveSquare = (state, player, direction) => {
             );
         }
     };
-    // if (occupied.includes(newCoords.toString())) {
-    //     console.log(`Chomp at ${newCoords}`);
-    // }
+    const newCoords = whichWay[direction]();
+    if (state.occupied.includes(newCoords.getIn([player, 0]))) {
+        console.log(`Chomp at ${newCoords.getIn([player, 0])}`);
+    }
     return {
-        // coordCheck: state.coords.flatten(1),
-        coords: whichWay[direction]()
+        // nonPlayerCoords: state.coords.flatten(1),
+        coords: newCoords
     };
 };
 //I need something that will check if a player is over food
@@ -57,4 +57,4 @@ const moveSquare = (state, player, direction) => {
 // therefore square does what a square did two turns ago
 //
 //
-export { coordCheckInit, moveSquare };
+export { nonPlayerCoordsInit, moveSquare };
