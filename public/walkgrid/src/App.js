@@ -1,7 +1,9 @@
+// eslint-disable-next-line
 import React, { Component } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import "./main.css";
+// eslint-disable-next-line
 import { coordCheckInit, moveSquare } from "./stateChanges.js";
 import WalkGrid from "./walkGrid.js";
 const { Map } = require("immutable");
@@ -25,15 +27,14 @@ function gridInit(x, y) {
     for (let i = 0; i < x; i++) {
         let yArray = [];
         for (let j = 0; j < y; j++) {
-            yArray.push(`${i},${j}`);
+            yArray.push([i, j]);
         }
         grid.push(yArray);
     }
 }
 
-gridInit(25, 25);
+gridInit(9, 9);
 const gridHeight = grid.length;
-const gridWidth = grid[0].length;
 let occupied = [];
 for (let i = 0; i < gridHeight; i += 1) {
     occupied.push(

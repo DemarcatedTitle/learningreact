@@ -1,6 +1,9 @@
+// eslint-disable-next-line
+/* eslint-disable no-useless-constructor */
 import React from "react";
 import { coordCheckInit, moveSquare } from "./stateChanges.js";
-import { List } from "immutable";
+// eslint-disable-next-line
+import { List, fromJS } from "immutable";
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 //Plans:
@@ -17,24 +20,26 @@ class WalkGrid extends React.Component {
         const grid = this.props.grid;
         const gridHeight = this.props.gridHeight;
         const playerOneStart = [
-            parseInt(grid.length / 2),
-            parseInt(grid[1].length / 2)
+            parseInt(grid.length / 2, 10),
+            parseInt(grid[1].length / 2, 10)
         ];
         const playerTwoStart = [
-            parseInt(grid.length / 2),
-            parseInt(grid[1].length / 2)
+            parseInt(grid.length / 2, 10),
+            parseInt(grid[1].length / 2, 10)
         ];
+        const startingPoints = fromJS([
+            [playerOneStart, [14, 14]],
+            [playerTwoStart]
+        ]);
+        let coordCheck = startingPoints.flatten(1);
+        console.log(coordCheck.join(","));
         this.state = {
-            coords: [[playerOneStart, [14, 14]], [playerTwoStart]]
+            coords: startingPoints,
+            coordCheck: coordCheck
+            // coordCheck
         };
-        this.state.coordCheck = coordCheckInit(this.state);
+        // this.setState({ coordCheck: coordCheckInit(this.state) });
         this.handleKeyPress = this.handleKeyPress.bind(this);
-        this.toggleActive = this.toggleActive.bind(this);
-    }
-    toggleActive() {
-        this.setState(prevState => ({
-            active: !prevState.active
-        }));
     }
     handleKeyPress(event) {
         if (event.key === "ArrowUp") {
@@ -75,10 +80,12 @@ class WalkGrid extends React.Component {
             <div>
                 <div className="Announcement">
                     <AnnouncementBox
-                        player={{ name: 0, coords: coords[0][0] }}
+                        gridHeight={this.props.gridHeight}
+                        player={{ name: 0, coords: coords.get(0).get(0) }}
                     />
                     <AnnouncementBox
-                        player={{ name: 1, coords: coords[1][0] }}
+                        gridHeight={this.props.gridHeight}
+                        player={{ name: 1, coords: coords.get(1).get(0) }}
                     />
                 </div>
                 <Rows
@@ -98,13 +105,14 @@ class AnnouncementBox extends React.PureComponent {
     render() {
         let outOfBounds = false;
         const gridHeight = this.props.gridHeight;
+        console.log(this.props.player.coords.get(0));
         if (
-            this.props.player.coords[0] >= gridHeight ||
-            this.props.player.coords[1] >= gridHeight
+            this.props.player.coords.get(0) >= gridHeight ||
+            this.props.player.coords.get(1) >= gridHeight
         ) {
             outOfBounds = true;
         }
-        const isOutOfBounds = outOfBounds ? "Player is out of bounds" : "";
+        let isOutOfBounds = outOfBounds ? "Player is out of bounds" : "";
         let classes = `${outOfBounds ? "outOfBounds" : ""}`;
         return (
             <div className={classes}>
@@ -133,8 +141,9 @@ class Rows extends React.Component {
     render() {
         const coords = this.props.coords;
         const coordCheck = this.props.coordCheck;
+        console.log(`<Rows/> ${coordCheck}`);
         const occupied = this.props.occupied;
-        let grid = List(this.props.grid);
+        let grid = fromJS(this.props.grid);
         const rows = grid.map(function(row) {
             // if (occupied.includes(square.toString())) {
             //     food = true;
@@ -145,8 +154,9 @@ class Rows extends React.Component {
                         let active = false;
                         let food = false;
                         const squareString = square.toString();
-                        if (coordCheck.includes(squareString)) {
+                        if (coordCheck.includes(square)) {
                             active = true;
+                            // console.log(square.join(","));
                         }
                         return (
                             <Space
