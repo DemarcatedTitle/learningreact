@@ -1,6 +1,7 @@
-// eslint-disable-next-line
 /* eslint-disable no-useless-constructor */
+// eslint-disable-next-line
 import React from "react";
+// eslint-disable-next-line
 import { coordCheckInit, moveSquare } from "./stateChanges.js";
 // eslint-disable-next-line
 import { List, fromJS } from "immutable";
@@ -32,7 +33,6 @@ class WalkGrid extends React.Component {
             [playerTwoStart]
         ]);
         let coordCheck = startingPoints.flatten(1);
-        console.log(coordCheck.join(","));
         this.state = {
             coords: startingPoints,
             coordCheck: coordCheck
@@ -42,8 +42,10 @@ class WalkGrid extends React.Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
     }
     handleKeyPress(event) {
+        if (event.key === " ") {
+            console.log(`coordCheck ${this.state.coordCheck.join(",")}`);
+        }
         if (event.key === "ArrowUp") {
-            //{{{
             this.setState(moveSquare(this.state, 0, "up"));
         }
         if (event.key === "ArrowDown") {
@@ -66,7 +68,7 @@ class WalkGrid extends React.Component {
         }
         if (event.key === "d") {
             this.setState(moveSquare(this.state, 1, "right"));
-        } //}}}
+        }
     }
     componentWillMount() {
         window.addEventListener("keypress", this.handleKeyPress);
@@ -105,7 +107,6 @@ class AnnouncementBox extends React.PureComponent {
     render() {
         let outOfBounds = false;
         const gridHeight = this.props.gridHeight;
-        console.log(this.props.player.coords.get(0));
         if (
             this.props.player.coords.get(0) >= gridHeight ||
             this.props.player.coords.get(1) >= gridHeight
@@ -134,14 +135,14 @@ class Space extends React.PureComponent {
     }
 }
 
-class Rows extends React.Component {
+class Rows extends React.PureComponent {
     constructor(props) {
         super(props);
     }
     render() {
         const coords = this.props.coords;
         const coordCheck = this.props.coordCheck;
-        console.log(`<Rows/> ${coordCheck}`);
+        const flatterCoords = coords.flatten(1);
         const occupied = this.props.occupied;
         let grid = fromJS(this.props.grid);
         const rows = grid.map(function(row) {
@@ -150,13 +151,15 @@ class Rows extends React.Component {
             // }
             return (
                 <div className="row" key={row.toString()}>
+
                     {row.map(function(square) {
                         let active = false;
                         let food = false;
-                        const squareString = square.toString();
-                        if (coordCheck.includes(square)) {
+                        if (
+                            flatterCoords.includes(square) ||
+                            coordCheck.includes(square)
+                        ) {
                             active = true;
-                            // console.log(square.join(","));
                         }
                         return (
                             <Space
@@ -166,6 +169,7 @@ class Rows extends React.Component {
                             />
                         );
                     })}
+
                 </div>
             );
         });

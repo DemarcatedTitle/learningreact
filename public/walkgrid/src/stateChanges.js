@@ -4,28 +4,19 @@
 //And I will use it for now
 import { List, fromJS } from "immutable";
 const coordCheckInit = coords => {
-    // Immutable List push and map won't work exactly the same, as pushing a js array
-    // I was getting an error about coords[0] is undefined
-    // I will have to completely transform how things are done
-    // So I'm not mutating stuff
-    // Because it seems like a lot of what I've done so far is based on mutation
     // eslint-disable-next-line
     let newLocationList = coords.map(function(currentPlayer) {
         currentPlayer.map(function(currentCoord) {
             //
             return currentCoord;
         });
-        //This will iterate through each player list
     });
-    // console.log(newLocationList.join(","));
     return fromJS(newLocationList);
 };
-// Move square currently mutates state.coords
 const moveSquare = (state, player, direction) => {
     let newCoords = state.coords.get(player).get(0);
     let listCoords = state.coords;
     const whichWay = {
-        //This is the play
         up: function() {
             return listCoords.setIn(
                 [player, 0, 0],
@@ -55,9 +46,8 @@ const moveSquare = (state, player, direction) => {
     //     console.log(`Chomp at ${newCoords}`);
     // }
     return {
-        coordCheck: state.coords.flatten(1),
+        // coordCheck: state.coords.flatten(1),
         coords: whichWay[direction]()
-        // coords: newCoords
     };
 };
 //I need something that will check if a player is over food

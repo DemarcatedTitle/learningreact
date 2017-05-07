@@ -5,15 +5,13 @@ import "./App.css";
 import "./main.css";
 // eslint-disable-next-line
 import { coordCheckInit, moveSquare } from "./stateChanges.js";
+// eslint-disable-next-line
 import WalkGrid from "./walkGrid.js";
 const { Map } = require("immutable");
 const map1 = Map({ a: 1, b: 2, c: 3 });
 const map2 = map1.set("b", 50);
 map1.get("b"); // 2
 map2.get("b"); // 50
-// console.log(map2.get("b"));
-// works^
-
 //Step 1: push all state to App
 //Step 1.5: convert existing data into immutable data
 
@@ -33,7 +31,7 @@ function gridInit(x, y) {
     }
 }
 
-gridInit(9, 9);
+gridInit(25, 25);
 const gridHeight = grid.length;
 let occupied = [];
 for (let i = 0; i < gridHeight; i += 1) {
