@@ -1,4 +1,3 @@
-/* eslint-disable no-useless-constructor */
 // eslint-disable-next-line
 import React from "react";
 // eslint-disable-next-line
@@ -6,7 +5,6 @@ import { nonPlayerCoordsInit, moveSquare } from "./stateChanges.js";
 // eslint-disable-next-line
 import { List, fromJS } from "immutable";
 /* eslint-disable no-console */
-/* eslint-disable no-unused-vars */
 //Plans:
 //I want to be able to set the grid size in the browser
 //I want to be able to set the grid size dynamically
@@ -15,72 +13,14 @@ import { List, fromJS } from "immutable";
 //I want to be able to have multiple 'character' squares
 //I want to use more than one key to perform an action
 
-class WalkGrid extends React.Component {
+class WalkGrid extends React.PureComponent {
     constructor(props) {
         super(props);
-        const grid = this.props.grid;
-        const gridHeight = this.props.gridHeight;
-        const playerOneStart = [
-            parseInt(grid.length / 2, 10),
-            parseInt(grid[1].length / 2, 10)
-        ];
-        const playerTwoStart = [
-            parseInt(grid.length / 2, 10),
-            parseInt(grid[1].length / 2, 10)
-        ];
-        const startingPoints = fromJS([
-            [playerOneStart, [14, 14]],
-            [playerTwoStart]
-        ]);
-        let nonPlayerCoords = startingPoints.flatten(1);
-        this.state = {
-            coords: startingPoints,
-            nonPlayerCoords: nonPlayerCoords,
-            occupied: this.props.occupied
-            // nonPlayerCoords
-        };
-        // this.setState({ nonPlayerCoords: nonPlayerCoordsInit(this.state) });
-        this.handleKeyPress = this.handleKeyPress.bind(this);
     }
-    handleKeyPress(event) {
-        if (event.key === " ") {
-            console.log(
-                `nonPlayerCoords ${this.state.nonPlayerCoords.join(",")}`
-            );
-        }
-        if (event.key === "ArrowUp") {
-            this.setState(moveSquare(this.state, 0, "up"));
-        }
-        if (event.key === "ArrowDown") {
-            this.setState(moveSquare(this.state, 0, "down"));
-        }
-        if (event.key === "ArrowLeft") {
-            this.setState(moveSquare(this.state, 0, "left"));
-        }
-        if (event.key === "ArrowRight") {
-            this.setState(moveSquare(this.state, 0, "right"));
-        }
-        if (event.key === "w") {
-            this.setState(moveSquare(this.state, 1, "up"));
-        }
-        if (event.key === "s") {
-            this.setState(moveSquare(this.state, 1, "down"));
-        }
-        if (event.key === "a") {
-            this.setState(moveSquare(this.state, 1, "left"));
-        }
-        if (event.key === "d") {
-            this.setState(moveSquare(this.state, 1, "right"));
-        }
-    }
-    componentWillMount() {
-        window.addEventListener("keypress", this.handleKeyPress);
-    }
-    componentWillUnmount() {
-        window.removeEventListener("keypress", this.handleKeyPress);
-    }
+    componentWillMount() {}
+    componentWillUnmount() {}
     render() {
-        let coords = this.state.coords;
+        const coords = this.props.coords;
         return (
             <div>
                 <div className="Announcement">
@@ -97,27 +37,33 @@ class WalkGrid extends React.Component {
                     grid={this.props.grid}
                     occupied={this.props.occupied}
                     coords={coords}
-                    nonPlayerCoords={this.state.nonPlayerCoords}
+                    nonPlayerCoords={this.props.nonPlayerCoords}
                 />
             </div>
         );
     }
 }
+// eslint-disable-next-line
 class AnnouncementBox extends React.PureComponent {
     constructor(props) {
         super(props);
     }
     render() {
-        let outOfBounds = false;
         const gridHeight = this.props.gridHeight;
-        if (
-            this.props.player.coords.get(0) >= gridHeight ||
-            this.props.player.coords.get(1) >= gridHeight
-        ) {
-            outOfBounds = true;
-        }
-        let isOutOfBounds = outOfBounds ? "Player is out of bounds" : "";
-        let classes = `${outOfBounds ? "outOfBounds" : ""}`;
+        const outOfBounds = this.props.player.coords.get(0) >= gridHeight ||
+            this.props.player.coords.get(1) >= gridHeight ||
+            this.props.player.coords.get(0) < 0 ||
+            this.props.player.coords.get(1) < 0
+            ? true
+            : false;
+        // if (
+        //     this.props.player.coords.get(0) >= gridHeight ||
+        //     this.props.player.coords.get(1) >= gridHeight
+        // ) {
+        //     outOfBounds = true;
+        // }
+        const isOutOfBounds = outOfBounds ? "Player is out of bounds" : "";
+        const classes = `${outOfBounds ? "outOfBounds" : ""}`;
         return (
             <div className={classes}>
                 {`Player ${this.props.player.name} Coordinates: ${this.props.player.coords.join(",")}  ${isOutOfBounds}`}
@@ -126,6 +72,7 @@ class AnnouncementBox extends React.PureComponent {
     }
 }
 
+// eslint-disable-next-line
 class Space extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -133,11 +80,12 @@ class Space extends React.PureComponent {
     render() {
         const active = this.props.active;
         const food = this.props.food;
-        let classes = `space ${food ? "food" : ""} ${active ? "active" : ""}`;
+        const classes = `space ${food ? "food" : ""} ${active ? "active" : ""}`;
         return <div className={classes} />;
     }
 }
 
+// eslint-disable-next-line
 class Rows extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -147,29 +95,23 @@ class Rows extends React.PureComponent {
         const nonPlayerCoords = this.props.nonPlayerCoords;
         const flatterCoords = coords.flatten(1);
         const occupied = this.props.occupied;
-        let grid = fromJS(this.props.grid);
+        const grid = this.props.grid;
         const rows = grid.map(function(row) {
+            // I believe performing two maps or rendering that many squares (25x25)
+            // is what is causing this to not perform as fast as I would like.
+            // There also may be other factors like the conditionals and functions running
+            // inside of them like .includes, .join
             return (
-                <div className="row" key={row.toString()}>
+                <div className="row" key={row}>
 
                     {row.map(function(square) {
-                        let active = false;
-                        let food = false;
-                        if (occupied.includes(square)) {
-                            food = true;
-                        }
-                        if (
-                            flatterCoords.includes(square) ||
+                        const active = flatterCoords.includes(square) ||
                             nonPlayerCoords.includes(square)
-                        ) {
-                            active = true;
-                        }
+                            ? true
+                            : false;
+                        const food = occupied.includes(square) ? true : false;
                         return (
-                            <Space
-                                key={square.toString()}
-                                active={active}
-                                food={food}
-                            />
+                            <Space key={square} active={active} food={food} />
                         );
                     })}
 
@@ -181,4 +123,3 @@ class Rows extends React.PureComponent {
 }
 
 export default WalkGrid;
-// ReactDOM.render(<WalkGrid grid={grid} />, document.getElementById("root"));
