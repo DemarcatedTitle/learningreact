@@ -45,7 +45,10 @@ const playerTwoStart = [
     parseInt(grid.length / 2, 10),
     parseInt(grid[1].length / 2, 10)
 ];
-const startingPoints = fromJS([[playerOneStart, [14, 14]], [playerTwoStart]]);
+const startingPoints = fromJS([
+    [playerOneStart, [playerOneStart[0], playerOneStart[1] - 1]],
+    [playerTwoStart]
+]);
 let nonPlayerCoords = startingPoints.flatten(1);
 outsideState = {
     coords: startingPoints,
@@ -80,6 +83,7 @@ class App extends Component {
         if (isKeydownAvailable) {
             if (event.key === " ") {
                 // eslint-disable-next-line
+                console.log(this.state.coords.join("||"));
             }
             if (event.key === "ArrowUp") {
                 this.setState(moveSquare(this.state, 0, "up"));
@@ -112,7 +116,7 @@ class App extends Component {
         // Could probably be solved by splitting it into n intervals for how many players.
         setInterval(function() {
             isKeydownAvailable = true;
-        }, 5);
+        }, 2);
     }
     componentDidMount() {
         window.addEventListener("keypress", this.handleKeyPress);

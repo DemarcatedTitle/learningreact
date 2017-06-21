@@ -20,43 +20,58 @@ const coordCheckInit = coords => {
     //// console.log(newLocationList.join(","));
     //return fromJS(newLocationList);
 };
-// Move square currently mutates state.coords
+const whichWay = {
+    // Player is an integer, 0 or 1 right now
+    // The first .setIn sets the trailing square to where the player square is
+    // The second one sets the player square to where it is directed
+    // Success.
+    // I need a more general algorithm that transforms the list.
+    //
+    up: function(player, listCoords) {
+        const playerList = listCoords.get(player);
+        console.log(playerList.join(","));
+        console.log(playerList.get(0).size);
+        if (playerList.size >= 2) {
+            const ammendedPlayerList = playerList
+                .unshift(playerList.updateIn([0, 0], val => val - 1).get(0))
+                .pop();
+            return listCoords.set(player, ammendedPlayerList);
+        }
+        // listCoords.set(player, ammendedPlayerList);
+        // This is transforming the xy array into just a y array.
+        // .setIn([player, 1], listCoords.get(player).get(0))
+        // .setIn([player, 0, 0], listCoords.get(player).get(0).get(0) - 1);
+    },
+    down: function(player, listCoords) {
+        const playerList = listCoords.get(player);
+        console.log(playerList.join(","));
+        return listCoords
+            .setIn([player, 1], listCoords.get(player).get(0))
+            .setIn([player, 0, 0], listCoords.get(player).get(0).get(0) + 1);
+    },
+    left: function(player, listCoords) {
+        return listCoords
+            .setIn([player, 1], listCoords.get(player).get(0))
+            .setIn([player, 0, 1], listCoords.get(player).get(0).get(1) - 1);
+    },
+    right: function(player, listCoords) {
+        return listCoords
+            .setIn([player, 1], listCoords.get(player).get(0))
+            .setIn([player, 0, 1], listCoords.get(player).get(0).get(1) + 1);
+    }
+};
 const moveSquare = (state, player, direction) => {
     const newCoords = state.coords.get(player).get(0);
+    const trailing = state.coords.get(player).get(1);
+
     const listCoords = state.coords;
-    const whichWay = {
-        up: function() {
-            return listCoords.setIn(
-                [player, 0, 0],
-                listCoords.get(player).get(0).get(0) - 1
-            );
-        },
-        down: function() {
-            return listCoords.setIn(
-                [player, 0, 0],
-                listCoords.get(player).get(0).get(0) + 1
-            );
-        },
-        left: function() {
-            return listCoords.setIn(
-                [player, 0, 1],
-                listCoords.get(player).get(0).get(1) - 1
-            );
-        },
-        right: function() {
-            return listCoords.setIn(
-                [player, 0, 1],
-                listCoords.get(player).get(0).get(1) + 1
-            );
-        }
-    };
     // if (occupied.includes(newCoords.toString())) {
     //     console.log(`Chomp at ${newCoords}`);
     // }
     // console.log(whichWay[direction]().join(","));
     return {
         coordCheck: state.coords.flatten(1),
-        coords: whichWay[direction]()
+        coords: whichWay[direction](player, listCoords)
         // coords: newCoords
     };
 };
