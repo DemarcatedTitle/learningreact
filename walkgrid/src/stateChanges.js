@@ -5,7 +5,7 @@ const whichWay = {
     // Player is an integer, 0 or 1 right now
     // The second one sets the player square to where it is directed
     //
-    up: function(player, listCoords) {
+    up: function(player, listCoords, occupied) {
         const playerList = listCoords.get(player);
         // The variable declaration is because it currently seems easier to read
         if (playerList.size >= 2) {
@@ -13,7 +13,22 @@ const whichWay = {
             // unshift adds new coord to the list, but transformed so it is where you want it
             // .pop removes the last element in the list so it doesn't just get longer
             const ammendedPlayerList = playerList
-                .unshift(playerList.updateIn([0, 0], val => val - 1).get(0))
+                .unshift(
+                    playerList
+                        .updateIn([0, 0], val => {
+                            if (
+                                occupied.includes(
+                                    playerList
+                                        .updateIn([0, 0], val => val - 1)
+                                        .get(0)
+                                )
+                            ) {
+                                console.log(`Chomp at newcoords`);
+                            }
+                            return val - 1;
+                        })
+                        .get(0)
+                )
                 .pop();
             return listCoords.set(player, ammendedPlayerList);
         } else {
@@ -57,14 +72,11 @@ const whichWay = {
 const moveSquare = (state, player, direction) => {
     const newCoords = state.coords.get(player).get(0);
     const trailing = state.coords.get(player).get(1);
-
+    const occupied = state.occupied;
     const listCoords = state.coords;
-    // if (occupied.includes(newCoords.toString())) {
-    //     console.log(`Chomp at ${newCoords}`);
-    // }
     return {
         coordCheck: state.coords.flatten(1),
-        coords: whichWay[direction](player, listCoords)
+        coords: whichWay[direction](player, listCoords, occupied)
     };
 };
 export { moveSquare };
