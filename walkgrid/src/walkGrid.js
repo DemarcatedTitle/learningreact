@@ -1,7 +1,7 @@
 // eslint-disable-next-line
 import React from "react";
 // eslint-disable-next-line
-import { nonPlayerCoordsInit, moveSquare } from "./stateChanges.js";
+import { moveSquare } from "./stateChanges.js";
 // eslint-disable-next-line
 import { List, fromJS } from "immutable";
 /* eslint-disable no-console */
@@ -14,9 +14,6 @@ import { List, fromJS } from "immutable";
 //I want to use more than one key to perform an action
 
 class WalkGrid extends React.PureComponent {
-    constructor(props) {
-        super(props);
-    }
     componentWillMount() {}
     componentWillUnmount() {}
     render() {
@@ -37,7 +34,6 @@ class WalkGrid extends React.PureComponent {
                     grid={this.props.grid}
                     occupied={this.props.occupied}
                     coords={coords}
-                    nonPlayerCoords={this.props.nonPlayerCoords}
                 />
             </div>
         );
@@ -45,9 +41,6 @@ class WalkGrid extends React.PureComponent {
 }
 // eslint-disable-next-line
 class AnnouncementBox extends React.PureComponent {
-    constructor(props) {
-        super(props);
-    }
     render() {
         const gridHeight = this.props.gridHeight;
         const outOfBounds = this.props.player.coords.get(0) >= gridHeight ||
@@ -74,9 +67,6 @@ class AnnouncementBox extends React.PureComponent {
 
 // eslint-disable-next-line
 class Space extends React.PureComponent {
-    constructor(props) {
-        super(props);
-    }
     render() {
         const active = this.props.active;
         const food = this.props.food;
@@ -87,12 +77,8 @@ class Space extends React.PureComponent {
 
 // eslint-disable-next-line
 class Rows extends React.PureComponent {
-    constructor(props) {
-        super(props);
-    }
     render() {
         const coords = this.props.coords;
-        const nonPlayerCoords = this.props.nonPlayerCoords;
         const flatterCoords = coords.flatten(1);
         const occupied = this.props.occupied;
         const grid = this.props.grid;
@@ -105,8 +91,7 @@ class Rows extends React.PureComponent {
                 <div className="row" key={row}>
 
                     {row.map(function(square) {
-                        const active = flatterCoords.includes(square) ||
-                            nonPlayerCoords.includes(square)
+                        const active = flatterCoords.includes(square)
                             ? true
                             : false;
                         const food = occupied.includes(square) ? true : false;

@@ -4,7 +4,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import "./main.css";
 // eslint-disable-next-line
-import { nonPlayerCoordsInit, moveSquare } from "./stateChanges.js";
+import { moveSquare } from "./stateChanges.js";
 // eslint-disable-next-line
 import WalkGrid from "./walkGrid.js";
 // eslint-disable-next-line
@@ -29,7 +29,7 @@ function gridInit(x, y) {
     }
 }
 
-gridInit(25, 25);
+gridInit(14, 14);
 const gridHeight = grid.length;
 let occupied = [];
 for (let i = 0; i < gridHeight; i += 1) {
@@ -46,13 +46,15 @@ const playerTwoStart = [
     parseInt(grid[1].length / 2, 10)
 ];
 const startingPoints = fromJS([
-    [playerOneStart, [playerOneStart[0], playerOneStart[1] - 1]],
+    [
+        playerOneStart,
+        [playerOneStart[0], playerOneStart[1] - 1],
+        [playerOneStart[0], playerOneStart[1] - 1]
+    ],
     [playerTwoStart]
 ]);
-let nonPlayerCoords = startingPoints.flatten(1);
 outsideState = {
     coords: startingPoints,
-    nonPlayerCoords: nonPlayerCoords,
     occupied: fromJS(occupied),
     animated: false
 };
@@ -138,7 +140,6 @@ class App extends Component {
                     coords={this.state.coords}
                     occupied={this.state.occupied}
                     grid={grid}
-                    nonPlayerCoords={this.state.nonPlayerCoords}
                     gridHeight={gridHeight}
                 />
             </div>
