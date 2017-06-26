@@ -45,6 +45,26 @@ const whichWay = {
             .getIn([player, 0]);
     }
 };
+function newState(
+    newOccupied,
+    newCoords,
+    player,
+    playerList,
+    occupied,
+    indexOfOccupied
+) {
+    if (newOccupied) {
+        return {
+            occupied: newOccupied,
+            coords: newCoords.setIn(
+                [player, playerList.size],
+                occupied.get(indexOfOccupied)
+            )
+        };
+    } else {
+        return { coords: newCoords };
+    }
+}
 const moveSquare = (state, player, direction) => {
     const newCoords = state.coords.get(player).get(0);
     const occupied = state.occupied;
@@ -61,26 +81,6 @@ const moveSquare = (state, player, direction) => {
         }
     }
     const newOccupied = checkOverlap();
-    if (newOccupied) {
-        //     answer.occupied = newOccupied;
-        //     answer.coords = answer.coords.set(
-        //         player,
-        //         ammendedPlayerList.push(occupied.get(indexOfOccupied))
-        //     );
-    }
-    function newState(newOccupied, newCoords) {
-        if (newOccupied) {
-            return {
-                occupied: newOccupied,
-                coords: newCoords.setIn(
-                    [player, playerList.size],
-                    occupied.get(indexOfOccupied)
-                )
-            };
-        } else {
-            return { coords: newCoords };
-        }
-    }
     if (playerList.size >= 2) {
         // This is allows for an arbitrary number of elements in the list to trail
         // the lead square
@@ -89,13 +89,27 @@ const moveSquare = (state, player, direction) => {
         const ammendedPlayerList = playerList.unshift(newLocation).pop();
         // conditional occupied delete, listcoords.set
         const newCoords = listCoords.set(player, ammendedPlayerList);
-        const answer = { coords: newCoords };
+        // const answer = { coords: newCoords };
 
-        return newState(newOccupied, newCoords);
+        return newState(
+            newOccupied,
+            newCoords,
+            player,
+            playerList,
+            occupied,
+            indexOfOccupied
+        );
     } else {
-        return { coords: listCoords.setIn([player, 0], newLocation) };
+        const newCoords = listCoords.setIn([player, 0], newLocation);
+        return newState(
+            newOccupied,
+            newCoords,
+            player,
+            playerList,
+            occupied,
+            indexOfOccupied
+        );
+        // return { coords: listCoords.setIn([player, 0], newLocation) };
     }
-
-    // return whichWay[direction](player, listCoords, occupied);
 };
 export { moveSquare };
