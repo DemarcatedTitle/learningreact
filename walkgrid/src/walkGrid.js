@@ -87,9 +87,15 @@ class Rows extends React.PureComponent {
             // is what is causing this to not perform as fast as I would like.
             // There also may be other factors like the conditionals and functions running
             // inside of them like .includes, .join
+            //
+            // Ideas:
+            // Maybe some kind of memoization?
+            // Maybe another thing being tracked that says whether or not there has been a change
+            // row specific
+            //
+            //
             return (
                 <div className="row" key={row}>
-
                     {row.map(function(square) {
                         const active = flatterCoords.includes(square)
                             ? true
