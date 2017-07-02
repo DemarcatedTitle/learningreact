@@ -3,13 +3,11 @@ import React, { Component } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import "./main.css";
-// eslint-disable-next-line
 import { moveSquare } from "./stateChanges.js";
 // eslint-disable-next-line
 import WalkGrid from "./walkGrid.js";
 // eslint-disable-next-line
 const { Map, List, fromJS } = require("immutable");
-// eslint-disable-next-line
 //Step 1: push all state to App
 //Step 1.5: convert existing data into immutable data
 
@@ -32,7 +30,7 @@ function gridInit(x, y) {
 gridInit(14, 14);
 const gridHeight = grid.length;
 let occupied = [];
-for (let i = 0; i < gridHeight; i += 1) {
+for (let i = 0; i < 25; i += 1) {
     occupied.push([getRandomInt(0, gridHeight), getRandomInt(0, gridHeight)]);
 }
 
@@ -59,18 +57,7 @@ outsideState = {
     animated: false
 };
 
-// I want this to just toggle each square as active just to see what it looks like.
-//function loadingAnimation() {
-//    for (let i = 0; i < gridHeight; i += 1) {
-//    }
-//    //This will let react know the animation when through
-//    this.setState({ alreadyAnimated: true });
-//}
-
 let isKeydownAvailable = true;
-// var myInt = setInterval(function () {
-//     for
-// });
 
 grid = fromJS(grid);
 class App extends Component {
@@ -80,13 +67,8 @@ class App extends Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
     }
     handleKeyPress(event) {
-        // Some kind of tick might make it less janky
-        //
+        // Some kind of tick might make it feel less janky
         if (isKeydownAvailable) {
-            if (event.key === " ") {
-                // eslint-disable-next-line
-                console.log(this.state.coords.join("||"));
-            }
             if (event.key === "ArrowUp") {
                 this.setState(moveSquare(this.state, 0, "up"));
             }
@@ -126,9 +108,6 @@ class App extends Component {
     componentWillUnmount() {
         window.removeEventListener("keypress", this.handleKeyPress);
     }
-    // onChange(state) {
-    //     this.setState(state);
-    // }
     render() {
         return (
             <div className="App" tabIndex="0">

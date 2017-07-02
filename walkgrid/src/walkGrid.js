@@ -1,17 +1,13 @@
 // eslint-disable-next-line
 import React from "react";
-// eslint-disable-next-line
-import { moveSquare } from "./stateChanges.js";
-// eslint-disable-next-line
-import { List, fromJS } from "immutable";
 /* eslint-disable no-console */
 //Plans:
-//I want to be able to set the grid size in the browser
-//I want to be able to set the grid size dynamically
-//I want the active square to be set somewhere in the middle of the dynamically set grid size
+// [ ]I want to be able to set the grid size in the browser
+// [x]I want to be able to set the grid size dynamically
+// [x]I want the active square to be set somewhere in the middle of the dynamically set grid size
 //
-//I want to be able to have multiple 'character' squares
-//I want to use more than one key to perform an action
+// [x]I want to be able to have multiple 'character' squares
+// [ ]I want to use more than one key to perform an action
 
 class WalkGrid extends React.PureComponent {
     componentWillMount() {}
@@ -82,6 +78,10 @@ class Rows extends React.PureComponent {
         const flatterCoords = coords.flatten(1);
         const occupied = this.props.occupied;
         const grid = this.props.grid;
+        // *********
+        // Maybe if I put the maps somewhere it only happens once, and then do some kind of filter
+        // thing or something where the iteration only happens over specific elements
+        // *********
         const rows = grid.map(function(row) {
             // I believe performing two maps or rendering that many squares (25x25)
             // is what is causing this to not perform as fast as I would like.
