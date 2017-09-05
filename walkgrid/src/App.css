@@ -1,5 +1,5 @@
 .App {
-  text-align: center;
+  /* text-align: center; */
 }
 
 .App-logo {
@@ -7,15 +7,204 @@
   height: 80px;
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
-}
-
 .App-intro {
   font-size: large;
+}
+ul { 
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    /* max-height: 400px; */
+    /* height: 400px; */
+    background-color: dimgray;
+    /* max-width: 800px; */
+}
+.App-header {
+    /* background-color: #222; */
+    padding: 20px;
+    color: white;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content:flex-end;
+    height: min-content;
+}
+
+.App-header ul {
+    height: min-content;
+}
+
+.App-header li {
+    /* flex:row; */
+    /* margin: 1em; */
+    padding: 1em;
+    height: min-content;
+    background-color: #303030;
+}
+.componentContainer {
+    display: flex;
+}
+.loginContainer {
+    background-color: orange;
+    /* flex-grow: 1; */
+    align-items: center;
+    align-content: center;
+    flex-flow: wrap;
+    justify-content: center;
+    position: relative;
+    width: min-content;
+    height: auto;
+
+}
+.spacer {
+    flex-grow: 1;
+}
+.loginContainer :nth-child(1n) {
+    margin: .5em;
+}
+form { 
+    justify-content: center;
+    max-width: 800px;
+    display: flex;
+}
+input {
+    flex-grow: 1;
+    width: max-content;
+}
+/* p { */
+/*     margin: 0; */
+/* } */
+.wrongPassContainer {
+    display: flex;
+}
+.messageData {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    background-color: grey;
+    color: black;
+}
+.messageData p:nth-of-type(2) {
+    flex: 0 1 auto;
+    /* position: absolute; */
+}
+.messageData p:nth-of-type(1) {
+    width: 175px;
+}
+.messageData p:nth-of-type(3) {
+    flex: 0 1 auto;
+    width: 175px;
+
+}
+.username {
+    color: purple;
+}
+.message {
+    background-color: silver;
+    margin: 0;
+    color: black;
+}
+#endOfMessages { 
+    font-size: 10px;
+    background-color: aqua;
+    justify-content: center;
+
+}
+.rooms {
+    color: black;
+}
+.rooms ul {
+    display: flex;
+}
+.rooms ul li {
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.rooms ul li p:hover {
+    background-color: yellow;
+}
+.users {
+    color: black;
+    flex-direction: column;
+}
+.users ul {
+    display: flex;
+    flex-direction: column;
+}
+.users ul li {
+    padding-left: 15px;
+    padding-right: 15px;
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+    margin-bottom: -1px;
+    /* margin-top: 5px; */
+}
+.users ul li p:hover {
+    background-color: yellow;
+}
+.users ul li p {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 15px;
+    margin-right: 5px;
+}
+
+.in {
+    background-color: grey;
+}
+.active {
+    background-color: orange;
+}
+.columnContainer {
+    display: flex;
+    flex-direction: column;
+}
+.rowContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.chatBox { 
+    flex-grow: 1;
+    background-color: grey;
+    max-width:800px;
+}
+.chatBox  ul {
+    height: 400px;
+    overflow-y: scroll;
+}
+a:visited {
+    color: orange;
+}
+a {
+    text-decoration: none;
+}
+
+.login {
+    /* align-items: center; */
+    /* align-content: center; */
+    /* flex-flow: wrap; */
+    /* justify-content: center; */
+    /* position: relative; */
+    /* display: flex; */
+    /* width: 200px; */
+    /* height: 12em; */
+}
+.login div :nth-child(1n) {
+    /* margin: .5em; */
+}
+
+.validationErr {
+    color: white;
+    background-color: red;
+    justify-content: left;
+
+}
+
+
+body {
+    background-color: #262626;
 }
 
 @keyframes App-logo-spin {
