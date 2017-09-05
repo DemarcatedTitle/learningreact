@@ -1,11 +1,24 @@
+/* eslint-disable no-unused-vars */
 // eslint-disable-next-line
 import React, { Component } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import "./main.css";
 import { moveSquare } from "./stateChanges.js";
 // eslint-disable-next-line
 import WalkGrid from "./walkGrid.js";
+import {
+    BrowserRouter as Router,
+    Route,
+    Link,
+    Redirect
+} from "react-router-dom";
+import Routes from "./Routes.js";
+import LoggedIn from "./LoggedIn.js";
+import SocketContainer from "./SocketContainer.js";
+import logo from "./logo.svg";
+import "./App.css";
+const io = require("socket.io-client");
+let socket;
 // eslint-disable-next-line
 const { Map, List, fromJS } = require("immutable");
 //Step 1: push all state to App
@@ -108,14 +121,20 @@ class App extends Component {
     componentWillUnmount() {
         window.removeEventListener("keypress", this.handleKeyPress);
     }
+    // <div className="App-header">
+    //     <img src={logo} className="App-logo" alt="logo" />
+    //     <h2>Welcome to React</h2>
+    // </div>
+    // <WalkGrid
+    //     coords={this.state.coords}
+    //     occupied={this.state.occupied}
+    //     grid={grid}
+    //     gridHeight={gridHeight}
+    // />
     render() {
         return (
             <div className="App" tabIndex="0">
-                <div className="App-header">
-                    <img src={logo} className="App-logo" alt="logo" />
-                    <h2>Welcome to React</h2>
-                </div>
-                <WalkGrid
+                <SocketContainer
                     coords={this.state.coords}
                     occupied={this.state.occupied}
                     grid={grid}
