@@ -6,7 +6,6 @@ class users extends Component {
         super(props);
     }
     render() {
-        console.log(this.props);
         let userArray = this.props.usersProps.users.map((user, index) => {
             const active = user === this.props.usersProps.currentuser
                 ? "active"

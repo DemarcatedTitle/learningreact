@@ -25,6 +25,7 @@ class ChatBox extends React.PureComponent {
     }
     componentWillUnmount() {}
     render() {
+        console.log(this.props);
         // currentroom gets set before chat logs
         let displayedRoom = "";
         if (
@@ -57,7 +58,6 @@ class ChatBox extends React.PureComponent {
                     </li>
                 );
             });
-        console.log(this.props.usersProps);
         return (
             <div className="columnContainer">
                 <Rooms roomsProps={this.props.roomsProps} />

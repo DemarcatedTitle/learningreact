@@ -15,12 +15,14 @@ class GridChat extends React.PureComponent {
         return (
             <div className="GridChat">
                 <WalkGrid
+                    socket={this.props.socket}
                     coords={this.props.coords}
                     occupied={this.props.occupied}
                     grid={this.props.grid}
                     gridHeight={this.props.gridHeight}
                 />
                 <ChatBox
+                    socket={this.props.socket}
                     roomsProps={this.props.roomsProps}
                     chatlogs={this.props.chatlogs}
                     usersProps={this.props.usersProps}

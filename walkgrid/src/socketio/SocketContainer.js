@@ -70,7 +70,6 @@ class SocketContainer extends Component {
                     });
                     socket.on("users", sockethandlers.users.bind(this));
                     socket.on("userJoined", user => {
-                        console.log(user);
                         if (!this.state.users.includes(user)) {
                             this.setState({
                                 users: this.state.users.concat(user)
@@ -79,7 +78,6 @@ class SocketContainer extends Component {
                     });
                     socket.on("userLeft", user => {
                         // this.setstate remove user
-                        console.log("userLeft");
                         this.setState({
                             users: this.state.users.filter(
                                 oldUser => oldUser !== user
@@ -120,9 +118,12 @@ class SocketContainer extends Component {
     }
     componentDidMount() {
         if (this.state.loggedIn) {
+            socket.on("grid", grid => {
+                return this.setState({ grid: grid });
+            });
+
             socket.on("users", sockethandlers.users.bind(this));
             socket.on("userJoined", user => {
-                console.log(user);
                 if (!this.state.users.includes(user)) {
                     this.setState({
                         users: this.state.users.concat(user)
@@ -131,7 +132,6 @@ class SocketContainer extends Component {
             });
             socket.on("userLeft", user => {
                 // this.setstate remove user
-                console.log("userLeft");
                 this.setState({
                     users: this.state.users.filter(oldUser => oldUser !== user)
                 });
@@ -165,7 +165,7 @@ class SocketContainer extends Component {
                 login={this.login}
                 coords={this.props.coords}
                 occupied={this.props.occupied}
-                grid={this.props.grid}
+                grid={this.state.grid}
                 gridHeight={this.props.gridHeight}
                 roomsProps={roomsProps}
                 usersProps={usersProps}

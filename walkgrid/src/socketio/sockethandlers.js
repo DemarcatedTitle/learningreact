@@ -5,7 +5,6 @@ exports.chatMessages = function(messages) {
 };
 
 exports.rooms = function(rooms) {
-    console.log("rooms");
     const roomObj = JSON.parse(rooms);
     this.setState({
         rooms: roomObj.rooms,

@@ -14,25 +14,33 @@ class WalkGrid extends React.PureComponent {
     componentWillUnmount() {}
     render() {
         const coords = this.props.coords;
-        return (
-            <div>
-                <div className="Announcement">
-                    <AnnouncementBox
-                        gridHeight={this.props.gridHeight}
-                        player={{ name: 0, coords: coords.get(0).get(0) }}
-                    />
-                    <AnnouncementBox
-                        gridHeight={this.props.gridHeight}
-                        player={{ name: 1, coords: coords.get(1).get(0) }}
+        if (this.props.grid) {
+            return (
+                <div>
+                    <div className="Announcement">
+                        <AnnouncementBox
+                            gridHeight={this.props.gridHeight}
+                            player={{ name: 0, coords: coords.get(0).get(0) }}
+                        />
+                        <AnnouncementBox
+                            gridHeight={this.props.gridHeight}
+                            player={{ name: 1, coords: coords.get(1).get(0) }}
+                        />
+                    </div>
+                    <Rows
+                        grid={this.props.grid}
+                        occupied={this.props.occupied}
+                        coords={coords}
                     />
                 </div>
-                <Rows
-                    grid={this.props.grid}
-                    occupied={this.props.occupied}
-                    coords={coords}
-                />
-            </div>
-        );
+            );
+        } else {
+            return (
+                <div className="spacer validationErr">
+                    <p>The grid has not yet loaded.</p>
+                </div>
+            );
+        }
     }
 }
 // eslint-disable-next-line
