@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 import React, { Component } from "react";
-import Routes from "./Routes.js";
+import Routes from "../Routes.js";
 const io = require("socket.io-client");
 const sockethandlers = require("./sockethandlers.js");
 const roomhandler = require("./sockethandlers.js").rooms;

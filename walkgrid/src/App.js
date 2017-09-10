@@ -13,8 +13,7 @@ import {
     Redirect
 } from "react-router-dom";
 import Routes from "./Routes.js";
-import LoggedIn from "./LoggedIn.js";
-import SocketContainer from "./SocketContainer.js";
+import SocketContainer from "./socketio/SocketContainer.js";
 import logo from "./logo.svg";
 import "./App.css";
 const io = require("socket.io-client");

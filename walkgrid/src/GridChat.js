@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React from "react";
 import WalkGrid from "./walkGrid.js";
-import ChatBox from "./ChatBox.js";
+import ChatBox from "./chat/ChatBox.js";
 class GridChat extends React.PureComponent {
     constructor(props) {
         super(props);
@@ -13,7 +13,7 @@ class GridChat extends React.PureComponent {
     componentWillUnmount() {}
     render() {
         return (
-            <div>
+            <div className="GridChat">
                 <WalkGrid
                     coords={this.props.coords}
                     occupied={this.props.occupied}

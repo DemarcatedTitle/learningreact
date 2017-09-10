@@ -207,6 +207,13 @@ body {
     background-color: #262626;
 }
 
+.GridChat {
+    display: flex;
+}
+.GridChat div:nth-of-type(2){
+    flex-grow: 1;
+}
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
