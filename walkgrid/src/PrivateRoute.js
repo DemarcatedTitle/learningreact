@@ -10,13 +10,8 @@ const PrivateRoute = ({
     component: Component,
     socket,
     loggedIn,
-    chatlogs,
-    roomsProps,
-    usersProps,
-    coords,
-    occupied,
-    grid,
-    gridHeight,
+    chatProps,
+    gridProps,
     ...rest
 }) => (
     <Route
@@ -24,14 +19,9 @@ const PrivateRoute = ({
         render={props =>
             (loggedIn
                 ? <Component
-                      roomsProps={roomsProps}
-                      usersProps={usersProps}
-                      chatlogs={chatlogs}
                       socket={socket}
-                      coords={coords}
-                      occupied={occupied}
-                      grid={grid}
-                      gridHeight={gridHeight}
+                      chatProps={chatProps}
+                      gridProps={gridProps}
                       {...props}
                   />
                 : <Redirect

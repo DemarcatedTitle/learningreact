@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
+/* eslint-disable no-useless-constructor */
 import React, { Component } from "react";
 import {
     BrowserRouter as Router,
@@ -64,27 +65,17 @@ class Routes extends Component {
                         />
                         <PrivateRoute
                             test={"this is a test"}
-                            roomsProps={this.props.roomsProps}
-                            usersProps={this.props.usersProps}
-                            chatlogs={this.props.chatlogs}
                             loggedIn={this.props.loggedIn}
                             socket={this.props.socket}
-                            coords={this.props.coords}
-                            occupied={this.props.occupied}
-                            grid={this.props.grid}
-                            gridHeight={this.props.gridHeight}
+                            gridProps={this.props.gridProps}
+                            chatProps={this.props.chatProps}
                             exact
                             path="/"
-                            component={ChatBox}
+                            component={GridChat}
                         />
                         <PrivateRoute
-                            roomsProps={this.props.roomsProps}
-                            usersProps={this.props.usersProps}
-                            chatlogs={this.props.chatlogs}
-                            coords={this.props.coords}
-                            occupied={this.props.occupied}
-                            grid={this.props.grid}
-                            gridHeight={this.props.gridHeight}
+                            gridProps={this.props.gridProps}
+                            chatProps={this.props.chatProps}
                             loggedIn={this.props.loggedIn}
                             socket={this.props.socket}
                             path="/auth"

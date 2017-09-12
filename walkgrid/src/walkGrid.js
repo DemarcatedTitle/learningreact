@@ -10,13 +10,26 @@ import React from "react";
 // [ ]I want to use more than one key to perform an action
 
 class WalkGrid extends React.PureComponent {
+    constructor(props) {
+        super(props);
+        this.handleClick = this.handleClick.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+    }
     componentWillMount() {}
     componentWillUnmount() {}
+    handleClick() {}
+    handleKeyPress(event) {
+        this.props.handleKeyPress(event);
+    }
     render() {
         const coords = this.props.coords;
-        if (this.props.grid) {
+        if (this.props.grid && this.props.coords && this.props.occupied) {
             return (
-                <div>
+                <div
+                    tabIndex="0"
+                    onClick={this.handleClick}
+                    onKeyPress={this.handleKeyPress}
+                >
                     <div className="Announcement">
                         <AnnouncementBox
                             gridHeight={this.props.gridHeight}

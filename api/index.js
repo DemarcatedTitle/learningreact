@@ -94,8 +94,6 @@ login.register(require("hapi-auth-jwt2"), function(err) {
                 //     `request.payload: ${JSON.stringify(request.payload)}`
                 // );
                 // Set expiresIn to a long time to work on front end things.
-                console.log(request.payload);
-                console.log(users.get(request.payload.username));
                 var token = JWT.sign(
                     { username: request.payload.username },
                     secret,

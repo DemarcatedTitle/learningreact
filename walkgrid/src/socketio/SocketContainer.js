@@ -2,11 +2,12 @@
 /* eslint-disable no-unused-vars */
 import React, { Component } from "react";
 import Routes from "../Routes.js";
+const { List, fromJS } = require("immutable");
 const io = require("socket.io-client");
 const sockethandlers = require("./sockethandlers.js");
 const roomhandler = require("./sockethandlers.js").rooms;
 let socket;
-
+let isKeydownAvailable = true;
 class SocketContainer extends Component {
     constructor(props) {
         super(props);
@@ -35,9 +36,11 @@ class SocketContainer extends Component {
             currentUser: ""
         };
         this.logout = this.logout.bind(this);
+        this.chatMessage = this.chatMessage.bind(this);
         this.login = this.login.bind(this);
         this.joinChat = this.joinChat.bind(this);
         this.createRoom = this.createRoom.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
     }
     logout() {
         let history = this.props.history;
@@ -67,6 +70,15 @@ class SocketContainer extends Component {
                         query: {
                             token: localStorage.getItem("idtoken")
                         }
+                    });
+                    socket.on("grid", grid => {
+                        return this.setState({ grid: fromJS(grid) });
+                    });
+                    socket.on("coords", coords => {
+                        return this.setState({ coords: fromJS(coords) });
+                    });
+                    socket.on("occupied", occupied => {
+                        return this.setState({ occupied: fromJS(occupied) });
                     });
                     socket.on("users", sockethandlers.users.bind(this));
                     socket.on("userJoined", user => {
@@ -105,6 +117,9 @@ class SocketContainer extends Component {
     createRoom(payload) {
         socket.emit("new room", payload);
     }
+    chatMessage(payload) {
+        socket.emit("chat message", payload);
+    }
     joinChat(chatroom) {
         let tempLog = this.state.chatlogs;
         this.setState({ chatlogs: tempLog.set(chatroom, []) });
@@ -116,10 +131,53 @@ class SocketContainer extends Component {
         tempLog.set(messagesObj.room, messagesObj.logs);
         this.setState({ chatlogs: tempLog });
     }
+    handleKeyPress(event) {
+        // Some kind of tick might make it feel less janky
+        if (isKeydownAvailable) {
+            if (event.key === "ArrowUp") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "ArrowDown") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "ArrowLeft") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "ArrowRight") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "w") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "s") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "a") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "d") {
+                socket.emit("keypress", event.key);
+            }
+            isKeydownAvailable = false;
+        }
+        // Keeps movement from going crazy
+        // Doesn't currently work well with two people doing this.
+        // Could probably be solved by splitting it into n intervals for how many players.
+        setInterval(function() {
+            isKeydownAvailable = true;
+        }, 2);
+    }
     componentDidMount() {
+        // window.addEventListener("keypress", this.handleKeyPress);
         if (this.state.loggedIn) {
             socket.on("grid", grid => {
-                return this.setState({ grid: grid });
+                return this.setState({ grid: fromJS(grid) });
+            });
+            socket.on("coords", coords => {
+                return this.setState({ coords: fromJS(coords) });
+            });
+            socket.on("occupied", occupied => {
+                return this.setState({ occupied: fromJS(occupied) });
             });
 
             socket.on("users", sockethandlers.users.bind(this));
@@ -145,6 +203,9 @@ class SocketContainer extends Component {
             });
         }
     }
+    componentWillUnmount() {
+        // window.removeEventListener("keypress", this.handleKeyPress);
+    }
     render() {
         const login = this.login;
         const roomsProps = {
@@ -157,22 +218,36 @@ class SocketContainer extends Component {
             users: this.state.users,
             currentUser: this.state.currentUser
         };
+        const chatProps = {
+            usersProps: usersProps,
+            roomsProps: roomsProps,
+            chatlogs: this.state.chatlogs
+        };
+        const gridProps = {
+            coords: this.state.coords,
+            occupied: this.state.occupied,
+            grid: this.state.grid,
+            gridHeight: this.props.gridHeight,
+            handleKeyPress: this.handleKeyPress
+        };
         return (
             <Routes
                 loggedIn={this.state.loggedIn}
                 logout={this.logout}
                 wrongPass={this.state.wrongPass}
                 login={this.login}
-                coords={this.props.coords}
-                occupied={this.props.occupied}
-                grid={this.state.grid}
-                gridHeight={this.props.gridHeight}
-                roomsProps={roomsProps}
-                usersProps={usersProps}
-                chatlogs={this.state.chatlogs}
+                gridProps={gridProps}
+                chatProps={chatProps}
                 socket={socket}
             />
         );
     }
+    // roomsProps={roomsProps}
+    // usersProps={usersProps}
+    // chatlogs={this.state.chatlogs}
+    // coords={this.state.coords}
+    // occupied={this.state.occupied}
+    // grid={this.state.grid}
+    // gridHeight={this.props.gridHeight}
 }
 export default SocketContainer;

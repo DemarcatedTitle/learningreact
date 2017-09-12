@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-useless-constructor */
 import React from "react";
 import WalkGrid from "./walkGrid.js";
 import ChatBox from "./chat/ChatBox.js";
@@ -16,16 +17,17 @@ class GridChat extends React.PureComponent {
             <div className="GridChat">
                 <WalkGrid
                     socket={this.props.socket}
-                    coords={this.props.coords}
-                    occupied={this.props.occupied}
-                    grid={this.props.grid}
-                    gridHeight={this.props.gridHeight}
+                    coords={this.props.gridProps.coords}
+                    occupied={this.props.gridProps.occupied}
+                    grid={this.props.gridProps.grid}
+                    handleKeyPress={this.props.gridProps.handleKeyPress}
+                    gridHeight={this.props.gridProps.gridHeight}
                 />
                 <ChatBox
                     socket={this.props.socket}
-                    roomsProps={this.props.roomsProps}
-                    chatlogs={this.props.chatlogs}
-                    usersProps={this.props.usersProps}
+                    roomsProps={this.props.chatProps.roomsProps}
+                    chatlogs={this.props.chatProps.chatlogs}
+                    usersProps={this.props.chatProps.usersProps}
                 />
             </div>
         );

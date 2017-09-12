@@ -16,8 +16,8 @@ import Routes from "./Routes.js";
 import SocketContainer from "./socketio/SocketContainer.js";
 import logo from "./logo.svg";
 import "./App.css";
-const io = require("socket.io-client");
-let socket;
+// const io = require("socket.io-client");
+// let socket;
 // eslint-disable-next-line
 const { Map, List, fromJS } = require("immutable");
 //Step 1: push all state to App
@@ -76,50 +76,50 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = outsideState;
-        this.handleKeyPress = this.handleKeyPress.bind(this);
+        // this.handleKeyPress = this.handleKeyPress.bind(this);
     }
-    handleKeyPress(event) {
-        // Some kind of tick might make it feel less janky
-        if (isKeydownAvailable) {
-            if (event.key === "ArrowUp") {
-                this.setState(moveSquare(this.state, 0, "up"));
-            }
-            if (event.key === "ArrowDown") {
-                this.setState(moveSquare(this.state, 0, "down"));
-            }
-            if (event.key === "ArrowLeft") {
-                this.setState(moveSquare(this.state, 0, "left"));
-            }
-            if (event.key === "ArrowRight") {
-                this.setState(moveSquare(this.state, 0, "right"));
-            }
-            if (event.key === "w") {
-                this.setState(moveSquare(this.state, 1, "up"));
-            }
-            if (event.key === "s") {
-                this.setState(moveSquare(this.state, 1, "down"));
-            }
-            if (event.key === "a") {
-                this.setState(moveSquare(this.state, 1, "left"));
-            }
-            if (event.key === "d") {
-                this.setState(moveSquare(this.state, 1, "right"));
-            }
-            isKeydownAvailable = false;
-        }
-        // Keeps movement from going crazy
-        // Doesn't currently work well with two people doing this.
-        // Could probably be solved by splitting it into n intervals for how many players.
-        setInterval(function() {
-            isKeydownAvailable = true;
-        }, 2);
-    }
-    componentDidMount() {
-        window.addEventListener("keypress", this.handleKeyPress);
-    }
-    componentWillUnmount() {
-        window.removeEventListener("keypress", this.handleKeyPress);
-    }
+    // handleKeyPress(event) {
+    //     // Some kind of tick might make it feel less janky
+    //     if (isKeydownAvailable) {
+    //         if (event.key === "ArrowUp") {
+    //             this.setState(moveSquare(this.state, 0, "up"));
+    //         }
+    //         if (event.key === "ArrowDown") {
+    //             this.setState(moveSquare(this.state, 0, "down"));
+    //         }
+    //         if (event.key === "ArrowLeft") {
+    //             this.setState(moveSquare(this.state, 0, "left"));
+    //         }
+    //         if (event.key === "ArrowRight") {
+    //             this.setState(moveSquare(this.state, 0, "right"));
+    //         }
+    //         if (event.key === "w") {
+    //             this.setState(moveSquare(this.state, 1, "up"));
+    //         }
+    //         if (event.key === "s") {
+    //             this.setState(moveSquare(this.state, 1, "down"));
+    //         }
+    //         if (event.key === "a") {
+    //             this.setState(moveSquare(this.state, 1, "left"));
+    //         }
+    //         if (event.key === "d") {
+    //             this.setState(moveSquare(this.state, 1, "right"));
+    //         }
+    //         isKeydownAvailable = false;
+    //     }
+    //     // Keeps movement from going crazy
+    //     // Doesn't currently work well with two people doing this.
+    //     // Could probably be solved by splitting it into n intervals for how many players.
+    //     setInterval(function() {
+    //         isKeydownAvailable = true;
+    //     }, 2);
+    // }
+    // componentDidMount() {
+    //     window.addEventListener("keypress", this.handleKeyPress);
+    // }
+    // componentWillUnmount() {
+    //     window.removeEventListener("keypress", this.handleKeyPress);
+    // }
     // <div className="App-header">
     //     <img src={logo} className="App-logo" alt="logo" />
     //     <h2>Welcome to React</h2>

@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-useless-constructor */
 import React, { Component } from "react";
 class users extends Component {
     constructor(props) {
