@@ -41,6 +41,7 @@ class SocketContainer extends Component {
         this.joinChat = this.joinChat.bind(this);
         this.createRoom = this.createRoom.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.addSocketIOListeners = sockethandlers.addAllListeners.bind(this);
     }
     logout() {
         let history = this.props.history;
@@ -71,42 +72,8 @@ class SocketContainer extends Component {
                             token: localStorage.getItem("idtoken")
                         }
                     });
-                    socket.on("grid", grid => {
-                        return this.setState({ grid: fromJS(grid) });
-                    });
-                    socket.on("coords", coords => {
-                        return this.setState({ coords: fromJS(coords) });
-                    });
-                    socket.on("occupied", occupied => {
-                        return this.setState({ occupied: fromJS(occupied) });
-                    });
-                    socket.on("users", sockethandlers.users.bind(this));
-                    socket.on("userJoined", user => {
-                        if (!this.state.users.includes(user)) {
-                            this.setState({
-                                users: this.state.users.concat(user)
-                            });
-                        }
-                    });
-                    socket.on("userLeft", user => {
-                        // this.setstate remove user
-                        this.setState({
-                            users: this.state.users.filter(
-                                oldUser => oldUser !== user
-                            )
-                        });
-                    });
-                    socket.on(
-                        "chat message",
-                        sockethandlers.chatMessages.bind(this)
-                    );
-                    socket.on("rooms", roomhandler.bind(this));
-                    socket.on("error", error => {
-                        console.log(`componentDidMount Error: ${error}`);
-                        socket.close();
-                        return this.setState({ loggedIn: false });
-                    });
 
+                    this.addSocketIOListeners(socket);
                     return this.setState({ loggedIn: true });
                 } else {
                     return this.setState({ wrongPass: true });
@@ -170,37 +137,7 @@ class SocketContainer extends Component {
     componentDidMount() {
         // window.addEventListener("keypress", this.handleKeyPress);
         if (this.state.loggedIn) {
-            socket.on("grid", grid => {
-                return this.setState({ grid: fromJS(grid) });
-            });
-            socket.on("coords", coords => {
-                return this.setState({ coords: fromJS(coords) });
-            });
-            socket.on("occupied", occupied => {
-                return this.setState({ occupied: fromJS(occupied) });
-            });
-
-            socket.on("users", sockethandlers.users.bind(this));
-            socket.on("userJoined", user => {
-                if (!this.state.users.includes(user)) {
-                    this.setState({
-                        users: this.state.users.concat(user)
-                    });
-                }
-            });
-            socket.on("userLeft", user => {
-                // this.setstate remove user
-                this.setState({
-                    users: this.state.users.filter(oldUser => oldUser !== user)
-                });
-            });
-            socket.on("chat message", sockethandlers.chatMessages.bind(this));
-            socket.on("rooms", roomhandler.bind(this));
-            socket.on("error", error => {
-                console.log(`componentDidMount Error: ${error}`);
-                socket.close();
-                return this.setState({ loggedIn: false });
-            });
+            this.addSocketIOListeners(socket);
         }
     }
     componentWillUnmount() {

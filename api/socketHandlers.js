@@ -97,6 +97,7 @@ exports.io = function(listener, secret, users) {
                 );
             });
         });
+        console.log(socket.listeners);
         socket.on("disconnecting", function(reason) {
             console.log(reason);
             const roomsLeaving = Object.keys(socket.rooms);
