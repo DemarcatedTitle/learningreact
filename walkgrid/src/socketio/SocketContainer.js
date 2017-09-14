@@ -4,8 +4,8 @@ import React, { Component } from "react";
 import Routes from "../Routes.js";
 const { List, fromJS } = require("immutable");
 const io = require("socket.io-client");
-const sockethandlers = require("./sockethandlers.js");
-const roomhandler = require("./sockethandlers.js").rooms;
+const sockethandlers = require("./clientSocketHandlers.js");
+const roomhandler = require("./clientSocketHandlers.js").rooms;
 let socket;
 let isKeydownAvailable = true;
 class SocketContainer extends Component {

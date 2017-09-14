@@ -10,7 +10,7 @@ const path = require("path");
 const JWT = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const secret = "nevershareyoursecret";
-const socketHandlers = require("./socketHandlers.js");
+const socketHandlers = require("./serverSocketHandlers.js");
 
 const users = new Map();
 var server = new Hapi.Server({
