@@ -3,6 +3,7 @@
 /* eslint-disable indent */
 const { List, fromJS } = require("immutable");
 const keypress = require("./keypress.js").keypress;
+const gameInit = require("./gameInit.js").gameInit;
 const moveSquare = require("./grid/stateChanges.js").moveSquare;
 const { chatters, chatlogs, rooms, games } = require("./gamestate.js");
 let io;
@@ -31,47 +32,6 @@ exports.io = function(listener, secret, users) {
             }
         });
     });
-    function gameInit() {
-        let grid = [];
-        function gridInit(x, y) {
-            for (let i = 0; i < x; i++) {
-                let yArray = [];
-                for (let j = 0; j < y; j++) {
-                    yArray.push([i, j]);
-                }
-                grid.push(yArray);
-            }
-        }
-        gridInit(14, 14);
-        const playerOneStart = [
-            parseInt(grid.length / 2, 10),
-            parseInt(grid[1].length / 2, 10)
-        ];
-        const playerTwoStart = [
-            parseInt(grid.length / 2, 10),
-            parseInt(grid[1].length / 2, 10)
-        ];
-        const startingPoints = fromJS([[playerOneStart], [playerTwoStart]]);
-        const gridHeight = grid.length;
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min)) + min;
-        }
-        let occupied = [];
-        for (let i = 0; i < 25; i += 1) {
-            occupied.push([
-                getRandomInt(0, gridHeight),
-                getRandomInt(0, gridHeight)
-            ]);
-        }
-        return {
-            coords: startingPoints,
-            occupied: fromJS(occupied),
-            grid: grid
-        };
-    }
-    // moveSquare(state, 0, direction);
     io.on("connection", function(socket) {
         let currentRoom = "";
         let userToken = socket.handshake.query.token;
@@ -145,11 +105,6 @@ exports.io = function(listener, secret, users) {
                             })
                         );
                     });
-                    // Initialize here
-                    // I'll probably have to do this like chat rooms
-                    // each namespace gets an object
-                    // and when someone makes a new chat or joins, they get
-                    // the appropriate data
                     io.to(socket.id).emit("grid", state.grid);
                     io.to(socket.id).emit("coords", state.coords);
                     io.to(socket.id).emit("occupied", state.occupied);
@@ -163,15 +118,6 @@ exports.io = function(listener, secret, users) {
                 }
             });
         });
-        function changeState(state, player, direction) {
-            let tempState = moveSquare(state, player, direction);
-            if (tempState.coords) {
-                state.coords = tempState.coords;
-            }
-            if (tempState.occupied) {
-                state.occupied = tempState.occupied;
-            }
-        }
         JWT.verify(userToken, secret, function(err, decoded) {
             if (err) {
                 socket.emit("error", "Something went wrong");
