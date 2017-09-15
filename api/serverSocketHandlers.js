@@ -2,7 +2,9 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable indent */
 const { List, fromJS } = require("immutable");
-const moveSquare = require("./stateChanges.js").moveSquare;
+const keypress = require("./keypress.js").keypress;
+const moveSquare = require("./grid/stateChanges.js").moveSquare;
+const { chatters, chatlogs, rooms, games } = require("./gamestate.js");
 let io;
 const JWT = require("jsonwebtoken");
 function chatMessageEmission(room, chatlogs) {
@@ -29,10 +31,6 @@ exports.io = function(listener, secret, users) {
             }
         });
     });
-    let chatters = new Map();
-    var chatlogs = new Map();
-    let rooms = new Map();
-    let games = new Map();
     function gameInit() {
         let grid = [];
         function gridInit(x, y) {
@@ -97,7 +95,6 @@ exports.io = function(listener, secret, users) {
                 );
             });
         });
-        console.log(socket.listeners);
         socket.on("disconnecting", function(reason) {
             console.log(reason);
             const roomsLeaving = Object.keys(socket.rooms);
@@ -119,7 +116,6 @@ exports.io = function(listener, secret, users) {
                     let grid = [];
                     const state = gameInit();
                     state.players = new Map([[decoded.username, 0]]);
-                    console.log(state.players);
                     games.set(currentRoom, state);
                     socket.join(room, () => {
                         socket.broadcast.emit(
@@ -157,47 +153,13 @@ exports.io = function(listener, secret, users) {
                     io.to(socket.id).emit("grid", state.grid);
                     io.to(socket.id).emit("coords", state.coords);
                     io.to(socket.id).emit("occupied", state.occupied);
-                    console.log(state.coords);
-                    socket.on("keypress", function(key) {
-                        // Some kind of tick might make it feel less janky
-                        // if (key === "ArrowUp") {
-                        //     changeState(state, 0, up);
-                        //     // moveSquare(state, 0,0, "up");
-                        //     io.to(socket.id).emit("coords", state.coords);
-                        //     io.to(socket.id).emit("occupied", state.occupied);
-                        // }
-                        if (key === "w") {
-                            console.log(
-                                games
-                                    .get(currentRoom)
-                                    .players.get(decoded.username)
-                            );
-                            changeState(
-                                state,
-                                games
-                                    .get(currentRoom)
-                                    .players.get(decoded.username),
-                                "up"
-                            );
-                            io.to(socket.id).emit("coords", state.coords);
-                            io.to(socket.id).emit("occupied", state.occupied);
-                        }
-                        if (key === "s") {
-                            changeState(state, 0, "down");
-                            io.to(socket.id).emit("coords", state.coords);
-                            io.to(socket.id).emit("occupied", state.occupied);
-                        }
-                        if (key === "a") {
-                            changeState(state, 0, "left");
-                            io.to(socket.id).emit("coords", state.coords);
-                            io.to(socket.id).emit("occupied", state.occupied);
-                        }
-                        if (key === "d") {
-                            changeState(state, 0, "right");
-                            io.to(socket.id).emit("coords", state.coords);
-                            io.to(socket.id).emit("occupied", state.occupied);
-                        }
-                    });
+                    let context = {
+                        currentRoom,
+                        username: decoded.username,
+                        io,
+                        socket
+                    };
+                    socket.on("keypress", keypress.bind(context));
                 }
             });
         });
@@ -297,73 +259,20 @@ exports.io = function(listener, secret, users) {
                     io.to(socket.id).emit("coords", state.coords);
                     io.to(socket.id).emit("occupied", state.occupied);
                     console.log(socket.listeners("keypress"));
+                    let context = {
+                        currentRoom,
+                        username: decoded.username,
+                        io,
+                        socket
+                    };
                     if (
                         games.get(room).players.get(decoded.username) ===
                         undefined
                     ) {
-                        socket.on("keypress", function(key) {
-                            // Some kind of tick might make it feel less janky
-                            if (key === "ArrowUp") {
-                                changeState(state, 1, up);
-                                // moveSquare(state, 1,0, "up");
-                                io.to(socket.id).emit("coords", state.coords);
-                                io
-                                    .to(socket.id)
-                                    .emit("occupied", state.occupied);
-                            }
-                            if (key === "w") {
-                                changeState(
-                                    state,
-                                    games
-                                        .get(room)
-                                        .players.get(decoded.username),
-                                    "up"
-                                );
-                                io.to(socket.id).emit("coords", state.coords);
-                                io
-                                    .to(socket.id)
-                                    .emit("occupied", state.occupied);
-                            }
-                            if (key === "s") {
-                                changeState(
-                                    state,
-                                    games
-                                        .get(room)
-                                        .players.get(decoded.username),
-                                    "down"
-                                );
-                                io.to(socket.id).emit("coords", state.coords);
-                                io
-                                    .to(socket.id)
-                                    .emit("occupied", state.occupied);
-                            }
-                            if (key === "a") {
-                                changeState(
-                                    state,
-                                    games
-                                        .get(room)
-                                        .players.get(decoded.username),
-                                    "left"
-                                );
-                                io.to(socket.id).emit("coords", state.coords);
-                                io
-                                    .to(socket.id)
-                                    .emit("occupied", state.occupied);
-                            }
-                            if (key === "d") {
-                                changeState(
-                                    state,
-                                    games
-                                        .get(room)
-                                        .players.get(decoded.username),
-                                    "right"
-                                );
-                                io.to(socket.id).emit("coords", state.coords);
-                                io
-                                    .to(socket.id)
-                                    .emit("occupied", state.occupied);
-                            }
-                        });
+                        socket.on("keypress", keypress.bind(context));
+                    } else {
+                        socket.removeAllListeners("keypress");
+                        socket.on("keypress", keypress.bind(context));
                     }
                 }
             });
