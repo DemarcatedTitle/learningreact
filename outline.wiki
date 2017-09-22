@@ -1,0 +1,38 @@
+= What I need to do =
+    1. [X] Front-end build it so grid and chat are next to each other
+    2. [X] Make the chat functional
+    3. [X] Move all grid init logic to the back-end server
+        1. [X] Partly done
+        2. [X] 100%done
+    4. [X] Make it so that games are initialized by creating a room
+    5. [X] Make it so that joining a room joins the game
+        1. [X] Player can join the game
+        2. [X] Player's control different units
+        3. [X] After x people, people that join are observers only
+    6. [X] Make players color coded
+    7. [ ] One player in a room should(options):
+        1. [ ] Have a waiting lobby type thing, a pregame practice mode
+        2. [ ] Do nothing that can affect chances of winning the game
+        3. [ ] 
+    8. [ ] There needs to be a smooth separation of player control
+        1. [ ] Right now if you create a game and join a game two events get
+               sent
+        2. [ ] This double's actions and creates unnecessary computation
+        3. [ ] But it should be done in a way that allows reconnection
+    9. [o] Leaving a game needs handling
+        1. [X] Should allow reconnect if no other games are joined
+        2. [ ] Should forfeit if another game joined
+    10. [ ] I want everything to be responsive and usable on mobile devices
+        1. [ ] On desktop resolutions 
+            1. [ ] The squares should be a pleasant enough
+                   size so that everything is visible and proportionate 
+        2. [ ] On mobile resolutions
+            1. [ ] Everything should still be present and usable
+                1. [ ] But displaying the grid/chat should be toggled
+    11. [ ] Establish Win and Lose Conditions
+
+= What I was doing last =
+        1. [ ] Should allow reconnect if no other games are joined
+            1. [ ] Right now the keypress event is firing on the front end side
+                1. [ ] That means the socket on the back end side isn't applying
+                       the listener
