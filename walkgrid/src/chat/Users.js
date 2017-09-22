@@ -1,12 +1,12 @@
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-useless-constructor */
 import React, { Component } from "react";
 class users extends Component {
     constructor(props) {
         super(props);
     }
     render() {
-        console.log(this.props);
         let userArray = this.props.usersProps.users.map((user, index) => {
             const active = user === this.props.usersProps.currentuser
                 ? "active"

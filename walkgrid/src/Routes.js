@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
+/* eslint-disable no-useless-constructor */
 import React, { Component } from "react";
 import {
     BrowserRouter as Router,
@@ -7,18 +8,17 @@ import {
     Link,
     Redirect
 } from "react-router-dom";
-import SocketContainer from "./SocketContainer.js";
+import SocketContainer from "./socketio/SocketContainer.js";
 import PrivateRoute from "./PrivateRoute.js";
-import ChatBox from "./ChatBox.js";
+import ChatBox from "./chat/ChatBox.js";
 import GridChat from "./GridChat.js";
-import LoggedIn from "./LoggedIn.js";
+import LoggedIn from "./account/LoggedIn.js";
 import Login from "./Login.js";
-import NewRoom from "./NewRoom.js";
-import Rooms from "./Rooms.js";
+import NewRoom from "./chat/NewRoom.js";
+import Rooms from "./chat/Rooms.js";
 const io = require("socket.io-client");
-const sockethandlers = require("./sockethandlers.js");
-const roomhandler = require("./sockethandlers.js").rooms;
-// let socket;
+const sockethandlers = require("./socketio/clientSocketHandlers.js");
+const roomhandler = require("./socketio/clientSocketHandlers.js").rooms;
 
 class Routes extends Component {
     constructor(props) {
@@ -65,27 +65,17 @@ class Routes extends Component {
                         />
                         <PrivateRoute
                             test={"this is a test"}
-                            roomsProps={this.props.roomsProps}
-                            usersProps={this.props.usersProps}
-                            chatlogs={this.props.chatlogs}
                             loggedIn={this.props.loggedIn}
                             socket={this.props.socket}
-                            coords={this.props.coords}
-                            occupied={this.props.occupied}
-                            grid={this.props.grid}
-                            gridHeight={this.props.gridHeight}
+                            gridProps={this.props.gridProps}
+                            chatProps={this.props.chatProps}
                             exact
                             path="/"
-                            component={ChatBox}
+                            component={GridChat}
                         />
                         <PrivateRoute
-                            roomsProps={this.props.roomsProps}
-                            usersProps={this.props.usersProps}
-                            chatlogs={this.props.chatlogs}
-                            coords={this.props.coords}
-                            occupied={this.props.occupied}
-                            grid={this.props.grid}
-                            gridHeight={this.props.gridHeight}
+                            gridProps={this.props.gridProps}
+                            chatProps={this.props.chatProps}
                             loggedIn={this.props.loggedIn}
                             socket={this.props.socket}
                             path="/auth"

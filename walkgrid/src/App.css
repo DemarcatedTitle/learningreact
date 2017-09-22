@@ -207,6 +207,28 @@ body {
     background-color: #262626;
 }
 
+.GridChat {
+    display: flex;
+}
+.GridChat div:nth-of-type(2){
+    flex-grow: 1;
+}
+.hidden {
+display: none;
+}
+.chatBubble {
+color: white;
+position: fixed;
+font-weight: bolder;
+border: 1px solid white;
+text-shadow: 1px 1px 2px white, 0 0 1em white, 0 0 0.2em white;
+}
+.unselectable {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

@@ -57,9 +57,9 @@ class ChatBox extends React.PureComponent {
                     </li>
                 );
             });
-        console.log(this.props.usersProps);
+        let classes = `columnContainer ${this.props.className}`;
         return (
-            <div className="columnContainer">
+            <div className={classes}>
                 <Rooms roomsProps={this.props.roomsProps} />
                 <div className="rowContainer">
                     <div className="chatBox">

@@ -1,19 +1,20 @@
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 import React, { Component } from "react";
-import Routes from "./Routes.js";
+import Routes from "../Routes.js";
+const { List, fromJS } = require("immutable");
 const io = require("socket.io-client");
-const sockethandlers = require("./sockethandlers.js");
-const roomhandler = require("./sockethandlers.js").rooms;
+const sockethandlers = require("./clientSocketHandlers.js");
+const roomhandler = require("./clientSocketHandlers.js").rooms;
 let socket;
-
+let isKeydownAvailable = true;
 class SocketContainer extends Component {
     constructor(props) {
         super(props);
-        // const loggedIn = localStorage.getItem("idtoken") !== null
-        //     ? true
-        //     : false;
-        const loggedIn = true;
+        const loggedIn = localStorage.getItem("idtoken") !== null
+            ? true
+            : false;
+        // const loggedIn = true;
         // Temporary set Logged in as true to set it all up
         let listeners = false;
         if (loggedIn) {
@@ -32,12 +33,16 @@ class SocketContainer extends Component {
             currentRoom: "",
             listeners: listeners,
             users: [],
-            currentUser: ""
+            currentUser: "",
+            you: ""
         };
         this.logout = this.logout.bind(this);
+        this.chatMessage = this.chatMessage.bind(this);
         this.login = this.login.bind(this);
         this.joinChat = this.joinChat.bind(this);
         this.createRoom = this.createRoom.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.addSocketIOListeners = sockethandlers.addAllListeners.bind(this);
     }
     logout() {
         let history = this.props.history;
@@ -68,35 +73,8 @@ class SocketContainer extends Component {
                             token: localStorage.getItem("idtoken")
                         }
                     });
-                    socket.on("users", sockethandlers.users.bind(this));
-                    socket.on("userJoined", user => {
-                        console.log(user);
-                        if (!this.state.users.includes(user)) {
-                            this.setState({
-                                users: this.state.users.concat(user)
-                            });
-                        }
-                    });
-                    socket.on("userLeft", user => {
-                        // this.setstate remove user
-                        console.log("userLeft");
-                        this.setState({
-                            users: this.state.users.filter(
-                                oldUser => oldUser !== user
-                            )
-                        });
-                    });
-                    socket.on(
-                        "chat message",
-                        sockethandlers.chatMessages.bind(this)
-                    );
-                    socket.on("rooms", roomhandler.bind(this));
-                    socket.on("error", error => {
-                        console.log(`componentDidMount Error: ${error}`);
-                        socket.close();
-                        return this.setState({ loggedIn: false });
-                    });
 
+                    this.addSocketIOListeners(socket);
                     return this.setState({ loggedIn: true });
                 } else {
                     return this.setState({ wrongPass: true });
@@ -106,6 +84,9 @@ class SocketContainer extends Component {
     }
     createRoom(payload) {
         socket.emit("new room", payload);
+    }
+    chatMessage(payload) {
+        socket.emit("chat message", payload);
     }
     joinChat(chatroom) {
         let tempLog = this.state.chatlogs;
@@ -118,32 +99,51 @@ class SocketContainer extends Component {
         tempLog.set(messagesObj.room, messagesObj.logs);
         this.setState({ chatlogs: tempLog });
     }
-    componentDidMount() {
-        if (this.state.loggedIn) {
-            socket.on("users", sockethandlers.users.bind(this));
-            socket.on("userJoined", user => {
-                console.log(user);
-                if (!this.state.users.includes(user)) {
-                    this.setState({
-                        users: this.state.users.concat(user)
-                    });
-                }
-            });
-            socket.on("userLeft", user => {
-                // this.setstate remove user
-                console.log("userLeft");
-                this.setState({
-                    users: this.state.users.filter(oldUser => oldUser !== user)
-                });
-            });
-            socket.on("chat message", sockethandlers.chatMessages.bind(this));
-            socket.on("rooms", roomhandler.bind(this));
-            socket.on("error", error => {
-                console.log(`componentDidMount Error: ${error}`);
-                socket.close();
-                return this.setState({ loggedIn: false });
-            });
+    handleKeyPress(event) {
+        // Some kind of tick might make it feel less janky
+        console.log("keypress");
+        if (isKeydownAvailable) {
+            if (event.key === "ArrowUp") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "ArrowDown") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "ArrowLeft") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "ArrowRight") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "w") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "s") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "a") {
+                socket.emit("keypress", event.key);
+            }
+            if (event.key === "d") {
+                socket.emit("keypress", event.key);
+            }
+            isKeydownAvailable = false;
         }
+        // Keeps movement from going crazy
+        // Doesn't currently work well with two people doing this.
+        // Could probably be solved by splitting it into n intervals for how many players.
+        setInterval(function() {
+            isKeydownAvailable = true;
+        }, 2);
+    }
+    componentDidMount() {
+        // window.addEventListener("keypress", this.handleKeyPress);
+        if (this.state.loggedIn) {
+            this.addSocketIOListeners(socket);
+        }
+    }
+    componentWillUnmount() {
+        // window.removeEventListener("keypress", this.handleKeyPress);
     }
     render() {
         const login = this.login;
@@ -157,19 +157,27 @@ class SocketContainer extends Component {
             users: this.state.users,
             currentUser: this.state.currentUser
         };
+        const chatProps = {
+            usersProps: usersProps,
+            roomsProps: roomsProps,
+            chatlogs: this.state.chatlogs
+        };
+        const gridProps = {
+            coords: this.state.coords,
+            occupied: this.state.occupied,
+            grid: this.state.grid,
+            gridHeight: this.props.gridHeight,
+            handleKeyPress: this.handleKeyPress,
+            you: this.state.you
+        };
         return (
             <Routes
                 loggedIn={this.state.loggedIn}
                 logout={this.logout}
                 wrongPass={this.state.wrongPass}
                 login={this.login}
-                coords={this.props.coords}
-                occupied={this.props.occupied}
-                grid={this.props.grid}
-                gridHeight={this.props.gridHeight}
-                roomsProps={roomsProps}
-                usersProps={usersProps}
-                chatlogs={this.state.chatlogs}
+                gridProps={gridProps}
+                chatProps={chatProps}
                 socket={socket}
             />
         );
