@@ -48,6 +48,10 @@ exports.addAllListeners = function(socket) {
     socket.on("occupied", occupied => {
         return this.setState({ occupied: fromJS(occupied) });
     });
+    socket.on("outcome", outcome => {
+        console.log(outcome);
+        return this.setState({ outcome: outcome });
+    });
     socket.on("users", exports.users.bind(this));
     socket.on("userJoined", user => {
         if (!this.state.users.includes(user)) {

@@ -34,9 +34,15 @@ exports.io = function(listener, secret, users) {
     });
     io.on("connection", function(socket, username) {
         function gameUpdates(socket, state, username) {
+            console.log(games.get(currentRoom).players.size);
             io.in(currentRoom).emit("grid", state.grid);
             io.in(currentRoom).emit("coords", state.coords);
             io.in(currentRoom).emit("occupied", state.occupied);
+            if (games.get(currentRoom).players.size === 1) {
+                io.in(currentRoom).emit("outcome", "Waiting");
+            } else {
+                io.in(currentRoom).emit("outcome", "Game In Progress");
+            }
             // The line below returns the "you" player number
             io
                 .to(socket.id)
@@ -115,18 +121,6 @@ exports.io = function(listener, secret, users) {
                         );
                         gameUpdates(socket, state, decoded.username);
                     });
-                    // io.in(currentRoom).emit("grid", state.grid);
-                    // io.in(currentRoom).emit("coords", state.coords);
-                    // io.in(currentRoom).emit("occupied", state.occupied);
-                    // io
-                    //     .to(socket.id)
-                    //     .emit(
-                    //         "you",
-                    //         games.get(currentRoom).players.get(decoded.username)
-                    //     );
-                    // io.to(socket.id).emit("grid", state.grid);
-                    // io.to(socket.id).emit("coords", state.coords);
-                    // io.to(socket.id).emit("occupied", state.occupied);
                     let context = {
                         currentRoom,
                         username: decoded.username,
@@ -250,4 +244,6 @@ exports.io = function(listener, secret, users) {
             });
         });
     });
+    const repl = require("repl");
+    repl.start("> ").context.io = io;
 };

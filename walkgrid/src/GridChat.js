@@ -36,6 +36,7 @@ class GridChat extends React.PureComponent {
                     handleKeyPress={this.props.gridProps.handleKeyPress}
                     gridHeight={this.props.gridProps.gridHeight}
                     you={this.props.gridProps.you}
+                    outcome={this.props.gridProps.outcome}
                 />
                 <div className="chatBubble" onClick={this.toggleChat}>
                     <div className="unselectable">🗨️</div>

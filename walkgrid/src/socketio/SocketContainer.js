@@ -34,7 +34,8 @@ class SocketContainer extends Component {
             listeners: listeners,
             users: [],
             currentUser: "",
-            you: ""
+            you: "",
+            outcome: ""
         };
         this.logout = this.logout.bind(this);
         this.chatMessage = this.chatMessage.bind(this);
@@ -168,7 +169,8 @@ class SocketContainer extends Component {
             grid: this.state.grid,
             gridHeight: this.props.gridHeight,
             handleKeyPress: this.handleKeyPress,
-            you: this.state.you
+            you: this.state.you,
+            outcome: this.state.outcome
         };
         return (
             <Routes

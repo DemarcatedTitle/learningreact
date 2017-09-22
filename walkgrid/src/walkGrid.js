@@ -36,7 +36,11 @@ class WalkGrid extends React.PureComponent {
                     tabIndex="0"
                     onClick={this.handleClick}
                     onKeyPress={this.handleKeyPress}
+                    className="grid"
                 >
+                    <p className="outcome">
+                        {this.props.outcome}
+                    </p>
                     <div className="Announcement">
                         <AnnouncementBox
                             gridHeight={this.props.gridHeight}

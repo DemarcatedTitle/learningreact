@@ -30,9 +30,24 @@
             1. [ ] Everything should still be present and usable
                 1. [ ] But displaying the grid/chat should be toggled
     11. [ ] Establish Win and Lose Conditions
+    12. [ ] Make a tutorial
 
 = What I was doing last =
-        1. [ ] Should allow reconnect if no other games are joined
-            1. [ ] Right now the keypress event is firing on the front end side
-                1. [ ] That means the socket on the back end side isn't applying
-                       the listener
+    * I have the basic html/jsx/css set up for displaying win/loss conditions.
+    * My next move is to set up the triggers 
+
+    * Establish win/lose conditions
+        * Game state will have a record of score and final result
+        * Api will send a message saying "you won/lost"
+            * 
+        * Front-end will act appropriately
+            * [ ] Text Overlay saying if you won/loss
+            * [ ] Scoreboard displaying score
+            * [ ] Losing player can't move
+            * [ ] Winning player maybe can move? 
+            * [ ] Chat continues to work
+            * [ ] When everyone leaves the room, game closes out
+                * [ ] No longer accessible
+                    * [ ] Join Button not present
+                * [ ] But the record is kept somewhere
+              
