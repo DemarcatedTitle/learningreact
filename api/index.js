@@ -97,7 +97,7 @@ login.register(require("hapi-auth-jwt2"), function(err) {
                 var token = JWT.sign(
                     { username: request.payload.username },
                     secret,
-                    { expiresIn: 1200 }
+                    { expiresIn: 1000000000 }
                 );
                 function authenticate(username, password) {
                     bcrypt.compare(

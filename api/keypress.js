@@ -17,22 +17,34 @@ exports.keypress = function keypress(key) {
     let state = games.get(currentRoom);
     if (key === "w") {
         changeState(state, games.get(currentRoom).players.get(username), "up");
-        io.to(socket.id).emit("coords", state.coords);
-        io.to(socket.id).emit("occupied", state.occupied);
+        io.in(currentRoom).emit("coords", state.coords);
+        io.in(currentRoom).emit("occupied", state.occupied);
     }
     if (key === "s") {
-        changeState(state, 0, "down");
-        io.to(socket.id).emit("coords", state.coords);
-        io.to(socket.id).emit("occupied", state.occupied);
+        changeState(
+            state,
+            games.get(currentRoom).players.get(username),
+            "down"
+        );
+        io.in(currentRoom).emit("coords", state.coords);
+        io.in(currentRoom).emit("occupied", state.occupied);
     }
     if (key === "a") {
-        changeState(state, 0, "left");
-        io.to(socket.id).emit("coords", state.coords);
-        io.to(socket.id).emit("occupied", state.occupied);
+        changeState(
+            state,
+            games.get(currentRoom).players.get(username),
+            "left"
+        );
+        io.in(currentRoom).emit("coords", state.coords);
+        io.in(currentRoom).emit("occupied", state.occupied);
     }
     if (key === "d") {
-        changeState(state, 0, "right");
-        io.to(socket.id).emit("coords", state.coords);
-        io.to(socket.id).emit("occupied", state.occupied);
+        changeState(
+            state,
+            games.get(currentRoom).players.get(username),
+            "right"
+        );
+        io.in(currentRoom).emit("coords", state.coords);
+        io.in(currentRoom).emit("occupied", state.occupied);
     }
 };

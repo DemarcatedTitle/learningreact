@@ -11,10 +11,10 @@ let isKeydownAvailable = true;
 class SocketContainer extends Component {
     constructor(props) {
         super(props);
-        // const loggedIn = localStorage.getItem("idtoken") !== null
-        //     ? true
-        //     : false;
-        const loggedIn = true;
+        const loggedIn = localStorage.getItem("idtoken") !== null
+            ? true
+            : false;
+        // const loggedIn = true;
         // Temporary set Logged in as true to set it all up
         let listeners = false;
         if (loggedIn) {
@@ -33,7 +33,8 @@ class SocketContainer extends Component {
             currentRoom: "",
             listeners: listeners,
             users: [],
-            currentUser: ""
+            currentUser: "",
+            you: ""
         };
         this.logout = this.logout.bind(this);
         this.chatMessage = this.chatMessage.bind(this);
@@ -100,6 +101,7 @@ class SocketContainer extends Component {
     }
     handleKeyPress(event) {
         // Some kind of tick might make it feel less janky
+        console.log("keypress");
         if (isKeydownAvailable) {
             if (event.key === "ArrowUp") {
                 socket.emit("keypress", event.key);
@@ -165,7 +167,8 @@ class SocketContainer extends Component {
             occupied: this.state.occupied,
             grid: this.state.grid,
             gridHeight: this.props.gridHeight,
-            handleKeyPress: this.handleKeyPress
+            handleKeyPress: this.handleKeyPress,
+            you: this.state.you
         };
         return (
             <Routes
@@ -179,12 +182,5 @@ class SocketContainer extends Component {
             />
         );
     }
-    // roomsProps={roomsProps}
-    // usersProps={usersProps}
-    // chatlogs={this.state.chatlogs}
-    // coords={this.state.coords}
-    // occupied={this.state.occupied}
-    // grid={this.state.grid}
-    // gridHeight={this.props.gridHeight}
 }
 export default SocketContainer;

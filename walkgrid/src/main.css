@@ -11,8 +11,11 @@
 .food {
     background-color: green;
 }
-.active {
+.you {
     background-color: blue;
+}
+.enemy {
+    background-color: purple;
 }
 .Announcement { 
     position: fixed;

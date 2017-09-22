@@ -1,14 +1,14 @@
 const { List, fromJS } = require("immutable");
-function gridInit(x, y) {
-    for (let i = 0; i < x; i++) {
-        let yArray = [];
-        for (let j = 0; j < y; j++) {
-            yArray.push([i, j]);
-        }
-        grid.push(yArray);
-    }
-}
 exports.gameInit = function gameInit() {
+    function gridInit(x, y) {
+        for (let i = 0; i < x; i++) {
+            let yArray = [];
+            for (let j = 0; j < y; j++) {
+                yArray.push([i, j]);
+            }
+            grid.push(yArray);
+        }
+    }
     let grid = [];
     gridInit(14, 14);
     const playerOneStart = [

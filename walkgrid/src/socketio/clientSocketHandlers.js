@@ -38,6 +38,10 @@ exports.addAllListeners = function(socket) {
     socket.on("grid", grid => {
         return this.setState({ grid: fromJS(grid) });
     });
+    socket.on("you", you => {
+        // console.log(`you = ${you}`);
+        return this.setState({ you: parseInt(you) });
+    });
     socket.on("coords", coords => {
         return this.setState({ coords: fromJS(coords) });
     });

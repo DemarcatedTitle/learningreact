@@ -32,7 +32,16 @@ exports.io = function(listener, secret, users) {
             }
         });
     });
-    io.on("connection", function(socket) {
+    io.on("connection", function(socket, username) {
+        function gameUpdates(socket, state, username) {
+            io.in(currentRoom).emit("grid", state.grid);
+            io.in(currentRoom).emit("coords", state.coords);
+            io.in(currentRoom).emit("occupied", state.occupied);
+            // The line below returns the "you" player number
+            io
+                .to(socket.id)
+                .emit("you", games.get(currentRoom).players.get(username));
+        }
         let currentRoom = "";
         let userToken = socket.handshake.query.token;
         io.to(socket.id).emit(
@@ -104,10 +113,20 @@ exports.io = function(listener, secret, users) {
                                 currentRoom: room
                             })
                         );
+                        gameUpdates(socket, state, decoded.username);
                     });
-                    io.to(socket.id).emit("grid", state.grid);
-                    io.to(socket.id).emit("coords", state.coords);
-                    io.to(socket.id).emit("occupied", state.occupied);
+                    // io.in(currentRoom).emit("grid", state.grid);
+                    // io.in(currentRoom).emit("coords", state.coords);
+                    // io.in(currentRoom).emit("occupied", state.occupied);
+                    // io
+                    //     .to(socket.id)
+                    //     .emit(
+                    //         "you",
+                    //         games.get(currentRoom).players.get(decoded.username)
+                    //     );
+                    // io.to(socket.id).emit("grid", state.grid);
+                    // io.to(socket.id).emit("coords", state.coords);
+                    // io.to(socket.id).emit("occupied", state.occupied);
                     let context = {
                         currentRoom,
                         username: decoded.username,
@@ -147,7 +166,6 @@ exports.io = function(listener, secret, users) {
                                 "chat message",
                                 chatMessageEmission(currentRoom, chatlogs)
                             );
-                        console.log(chatlogs.get(currentRoom));
                     }
                 });
             }
@@ -170,6 +188,7 @@ exports.io = function(listener, secret, users) {
                             games.get(room).players.get(decoded.username) !== 0
                         ) {
                             games.get(room).players.set(decoded.username, 1);
+                        } else {
                         }
                         io.to(socket.id).emit(
                             "rooms",
@@ -197,14 +216,10 @@ exports.io = function(listener, secret, users) {
                                 logs: chatlogs.get(room)
                             })
                         );
+
+                        let state = games.get(currentRoom);
+                        gameUpdates(socket, state, decoded.username);
                     });
-                    // Also start a game
-                    console.log("test");
-                    let state = games.get(currentRoom);
-                    io.to(socket.id).emit("grid", state.grid);
-                    io.to(socket.id).emit("coords", state.coords);
-                    io.to(socket.id).emit("occupied", state.occupied);
-                    console.log(socket.listeners("keypress"));
                     let context = {
                         currentRoom,
                         username: decoded.username,
@@ -212,12 +227,23 @@ exports.io = function(listener, secret, users) {
                         socket
                     };
                     if (
-                        games.get(room).players.get(decoded.username) ===
-                        undefined
+                        typeof games.get(room).players.get(decoded.username) ===
+                        "number"
                     ) {
-                        socket.on("keypress", keypress.bind(context));
-                    } else {
                         socket.removeAllListeners("keypress");
+                        socket.on("keypress", keypress.bind(context));
+                    } else if (
+                        // If there is an available slot and you aren't in the game
+                        games.get(room).players.get(decoded.username) ===
+                            undefined && games.get(room).players.size < 2
+                    ) {
+                        socket.removeAllListeners("keypress");
+                        socket.on("keypress", keypress.bind(context));
+                    } else if (
+                        games.get(room).players.get(decoded.username) ===
+                            undefined && games.get(room).players.size < 2
+                    ) {
+                        // socket.removeAllListeners("keypress");
                         socket.on("keypress", keypress.bind(context));
                     }
                 }

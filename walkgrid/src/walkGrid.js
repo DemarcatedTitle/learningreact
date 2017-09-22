@@ -1,10 +1,11 @@
 // eslint-disable-next-line
 import React from "react";
+const { List, fromJS } = require("immutable");
 /* eslint-disable no-console */
 //Plans:
 // [ ]I want to be able to set the grid size in the browser
 // [x]I want to be able to set the grid size dynamically
-// [x]I want the active square to be set somewhere in the middle of the dynamically set grid size
+// [x]I want the you square to be set somewhere in the middle of the dynamically set grid size
 //
 // [x]I want to be able to have multiple 'character' squares
 // [ ]I want to use more than one key to perform an action
@@ -23,7 +24,13 @@ class WalkGrid extends React.PureComponent {
     }
     render() {
         const coords = this.props.coords;
-        if (this.props.grid && this.props.coords && this.props.occupied) {
+        if (
+            this.props.grid !== null &&
+            this.props.coords !== null &&
+            this.props.occupied !== null &&
+            typeof this.props.you === "number" &&
+            isNaN(this.props.you) === false
+        ) {
             return (
                 <div
                     tabIndex="0"
@@ -44,6 +51,7 @@ class WalkGrid extends React.PureComponent {
                         grid={this.props.grid}
                         occupied={this.props.occupied}
                         coords={coords}
+                        you={this.props.you}
                     />
                 </div>
             );
@@ -85,9 +93,10 @@ class AnnouncementBox extends React.PureComponent {
 // eslint-disable-next-line
 class Space extends React.PureComponent {
     render() {
-        const active = this.props.active;
+        const you = this.props.you;
         const food = this.props.food;
-        const classes = `space ${food ? "food" : ""} ${active ? "active" : ""}`;
+        const enemy = this.props.enemy;
+        const classes = `space ${food ? "food" : ""} ${you ? "you" : ""} ${enemy ? "enemy" : ""}`;
         return <div className={classes} />;
     }
 }
@@ -95,8 +104,12 @@ class Space extends React.PureComponent {
 // eslint-disable-next-line
 class Rows extends React.PureComponent {
     render() {
-        const coords = this.props.coords;
-        const flatterCoords = coords.flatten(1);
+        console.log(this.props.you);
+        const coords = this.props.coords.get(this.props.you);
+        const yourPlayer = this.props.you;
+        const opponent = yourPlayer === 1 ? 0 : 1;
+        const opCoords = this.props.coords.get(opponent);
+        const flatterCoords = coords;
         const occupied = this.props.occupied;
         const grid = this.props.grid;
         // *********
@@ -118,12 +131,18 @@ class Rows extends React.PureComponent {
             return (
                 <div className="row" key={row}>
                     {row.map(function(square) {
-                        const active = flatterCoords.includes(square)
+                        const you = flatterCoords.includes(square)
                             ? true
                             : false;
                         const food = occupied.includes(square) ? true : false;
+                        const enemy = opCoords.includes(square) ? true : false;
                         return (
-                            <Space key={square} active={active} food={food} />
+                            <Space
+                                key={square}
+                                you={you}
+                                enemy={enemy}
+                                food={food}
+                            />
                         );
                     })}
 
