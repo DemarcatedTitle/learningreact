@@ -50,7 +50,9 @@ function newState(
 ) {
     if (collision) {
         return {
-            collision: collision
+            collision: {
+                winner: otherPlayer(player)
+            }
         };
     }
     if (newOccupied) {
@@ -75,7 +77,6 @@ function checkOverlap(occupied, indexOfOccupied) {
 function checkEnemyCollision(state, currentPlayer, newLocation) {
     // If new square's coord is in the enemy's coord,
     // this player loses
-
     if (state.coords.get(otherPlayer(currentPlayer)).includes(newLocation)) {
         return true;
     } else {
