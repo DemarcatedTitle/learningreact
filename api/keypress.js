@@ -8,6 +8,9 @@ function changeState(state, player, direction) {
     if (tempState.occupied) {
         state.occupied = tempState.occupied;
     }
+    if (tempState.collision) {
+        state.collision = true;
+    }
 }
 exports.keypress = function keypress(key) {
     let currentRoom = this.currentRoom;
@@ -19,6 +22,11 @@ exports.keypress = function keypress(key) {
         changeState(state, games.get(currentRoom).players.get(username), "up");
         io.in(currentRoom).emit("coords", state.coords);
         io.in(currentRoom).emit("occupied", state.occupied);
+        if (state.collision) {
+            io.to(socket.id).emit("outcome", "Collision detected");
+        } else {
+            io.to(socket.id).emit("outcome", "Game In Progress");
+        }
     }
     if (key === "s") {
         changeState(
@@ -28,6 +36,11 @@ exports.keypress = function keypress(key) {
         );
         io.in(currentRoom).emit("coords", state.coords);
         io.in(currentRoom).emit("occupied", state.occupied);
+        if (state.collision) {
+            io.to(socket.id).emit("outcome", "Collision detected");
+        } else {
+            io.to(socket.id).emit("outcome", "Game In Progress");
+        }
     }
     if (key === "a") {
         changeState(
@@ -37,6 +50,11 @@ exports.keypress = function keypress(key) {
         );
         io.in(currentRoom).emit("coords", state.coords);
         io.in(currentRoom).emit("occupied", state.occupied);
+        if (state.collision) {
+            io.to(socket.id).emit("outcome", "Collision detected");
+        } else {
+            io.to(socket.id).emit("outcome", "Game In Progress");
+        }
     }
     if (key === "d") {
         changeState(
@@ -46,5 +64,10 @@ exports.keypress = function keypress(key) {
         );
         io.in(currentRoom).emit("coords", state.coords);
         io.in(currentRoom).emit("occupied", state.occupied);
+        if (state.collision) {
+            io.to(socket.id).emit("outcome", "Collision detected");
+        } else {
+            io.to(socket.id).emit("outcome", "Game In Progress");
+        }
     }
 };

@@ -74,7 +74,6 @@ exports.io = function(listener, secret, users) {
             console.log(reason);
             const roomsLeaving = Object.keys(socket.rooms);
             roomsLeaving.forEach(function(room) {
-                console.log(room);
                 console.log(`${chatters.get(socket.id)} just left`);
                 socket.to(room).emit("userLeft", chatters.get(socket.id));
             });
