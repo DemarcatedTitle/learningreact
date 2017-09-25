@@ -36,12 +36,12 @@
     * Establish win/lose conditions
         * Game state will have a record of score and final result
         * Api will send a message saying "you won/lost"
-            * [.] Collision detection will be the initial win/loss state
+            * [o] Collision detection will be the initial win/loss state
                 * [ ] If a player collides with themself, loss
-                * [.] If a player collides with an enemy, loss
+                * [X] If a player collides with an enemy, loss
                     * [X] I think this will be easier. If moving coord exists 
                           within enemy's body, collision detected
-                    * [ ] Attach a win/loss condition
+                    * [X] Attach a win/loss condition
         * Front-end will act appropriately
             * [X] Text Overlay saying if you won/loss
             * [ ] Scoreboard displaying score

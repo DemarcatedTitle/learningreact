@@ -48,13 +48,6 @@ function newState(
     indexOfOccupied,
     collision
 ) {
-    if (collision) {
-        return {
-            collision: {
-                winner: otherPlayer(player)
-            }
-        };
-    }
     if (newOccupied) {
         return {
             occupied: newOccupied,
@@ -92,6 +85,13 @@ exports.moveSquare = (state, player, direction) => {
     const indexOfOccupied = occupied.indexOf(newLocation);
     const newOccupied = checkOverlap(occupied, indexOfOccupied);
     const collision = checkEnemyCollision(state, player, newLocation);
+    if (collision) {
+        return {
+            collision: {
+                winner: otherPlayer(player)
+            }
+        };
+    }
     if (playerList.size >= 2) {
         // This is allows for an arbitrary number of elements in the list to trail
         // the lead square
@@ -100,7 +100,8 @@ exports.moveSquare = (state, player, direction) => {
         const ammendedPlayerList = playerList.unshift(newLocation).pop();
         // newCoords will return an object that contains:
         // 1. An occupied value if there is an overlap
-        // 2. a coords value regardless
+        // 2. a coords value
+        // 3. a collision value, if it exists
         const newCoords = listCoords.set(player, ammendedPlayerList);
         return newState(
             newOccupied,
