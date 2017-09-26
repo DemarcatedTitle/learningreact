@@ -33,19 +33,25 @@
     12. [ ] Make a tutorial
 
 = What I was doing last =
+            * [ ] When everyone leaves the room, game closes out
+                * [ ] No longer accessible
+                    * [ ] Join Button not present
+                * [ ] But the record is kept somewhere
+ 
+ 
     * Establish win/lose conditions
         * Game state will have a record of score and final result
         * Api will send a message saying "you won/lost"
-            * [o] Collision detection will be the initial win/loss state
-                * [ ] If a player collides with themself, loss
+            * [X] Collision detection will be the initial win/loss state
+                * [X] If a player collides with themself, loss
                 * [X] If a player collides with an enemy, loss
                     * [X] I think this will be easier. If moving coord exists 
                           within enemy's body, collision detected
                     * [X] Attach a win/loss condition
         * Front-end will act appropriately
             * [X] Text Overlay saying if you won/loss
-            * [ ] Scoreboard displaying score
-            * [ ] Losing player can't move
+            * [ ] Scoreboard displaying score ?
+            * [X] Losing player can't move
             * [ ] Winning player maybe can move? 
             * [ ] Chat continues to work
             * [ ] When everyone leaves the room, game closes out
