@@ -1,11 +1,16 @@
 /* eslint-disable no-console */
-/* eslint-disable no-unused-vars */
 /* eslint-disable indent */
 const { List, fromJS } = require("immutable");
 const keypress = require("./keypress.js").keypress;
 const gameInit = require("./gameInit.js").gameInit;
 const moveSquare = require("./grid/stateChanges.js").moveSquare;
-const { chatters, chatlogs, rooms, games } = require("./gamestate.js");
+const {
+    chatters,
+    chatlogs,
+    rooms,
+    games,
+    activePlayers
+} = require("./gamestate.js");
 let io;
 const JWT = require("jsonwebtoken");
 function chatMessageEmission(room, chatlogs) {
@@ -13,6 +18,47 @@ function chatMessageEmission(room, chatlogs) {
         room: room,
         logs: chatlogs.get(room)
     });
+}
+function forfeitPrevious(username, socket, currentRoom) {
+    if (activePlayers.has(username)) {
+        console.log(activePlayers);
+        let previousRoom = activePlayers.get(username);
+        const prevPlayers = games.get(previousRoom).players;
+        const winnerMap = new Map(prevPlayers);
+        winnerMap.delete(username);
+        const winner = winnerMap.keys().next().value;
+        io
+            .in(previousRoom)
+            .emit(
+                "outcome",
+                `${username} has forfeited, ${winner} is the winner!`
+            );
+        socket.leave(previousRoom, function(socket) {});
+        io.in(previousRoom).clients((error, clients) => {
+            if (error) throw error;
+            console.log(clients);
+            if (clients.length === 0) {
+                rooms.delete(previousRoom);
+                io.emit(
+                    "rooms",
+                    JSON.stringify({
+                        rooms: Array.from(rooms.keys())
+                    })
+                );
+            }
+        });
+    }
+}
+
+function updateRoomLists() {
+    // Iterate over each room
+    io.in(currentRoom).emit(
+        "rooms",
+        JSON.stringify({
+            rooms: Array.from(rooms.keys())
+            // currentRoom: currentRoom
+        })
+    );
 }
 exports.io = function(listener, secret, users) {
     io = require("socket.io")(listener);
@@ -85,6 +131,7 @@ exports.io = function(listener, secret, users) {
                 if (err) {
                     io.emit("error", "Something went wrong");
                 } else if (decoded.username) {
+                    forfeitPrevious(decoded.username, socket, currentRoom);
                     rooms.set(room, io.of(room));
                     chatlogs.set(currentRoom, []);
                     let grid = [];
@@ -119,6 +166,7 @@ exports.io = function(listener, secret, users) {
                             })
                         );
                         gameUpdates(socket, state, decoded.username);
+                        activePlayers.set(decoded.username, currentRoom);
                     });
                     let context = {
                         currentRoom,
@@ -126,6 +174,7 @@ exports.io = function(listener, secret, users) {
                         io,
                         socket
                     };
+                    socket.removeAllListeners("keypress");
                     socket.on("keypress", keypress.bind(context));
                 }
             });
@@ -169,6 +218,7 @@ exports.io = function(listener, secret, users) {
                 if (err) {
                     io.to(socket.id).emit("error", "Something went wrong");
                 } else if (decoded.username) {
+                    forfeitPrevious(decoded.username, socket, currentRoom);
                     io.in(currentRoom).clients(function(error, clients) {
                         if (!clients.includes(users)) {
                             socket
@@ -212,6 +262,7 @@ exports.io = function(listener, secret, users) {
 
                         let state = games.get(currentRoom);
                         gameUpdates(socket, state, decoded.username);
+                        activePlayers.set(decoded.username, currentRoom);
                     });
                     let context = {
                         currentRoom,

@@ -1,5 +1,11 @@
 const moveSquare = require("./grid/stateChanges.js").moveSquare;
-const { chatters, chatlogs, rooms, games } = require("./gamestate.js");
+const {
+    chatters,
+    chatlogs,
+    rooms,
+    games,
+    activePlayers
+} = require("./gamestate.js");
 function changeState(state, player, direction) {
     let tempState = moveSquare(state, player, direction);
     if (tempState.coords) {

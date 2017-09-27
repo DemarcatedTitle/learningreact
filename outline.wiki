@@ -19,9 +19,9 @@
                sent
         2. [ ] This double's actions and creates unnecessary computation
         3. [ ] But it should be done in a way that allows reconnection
-    9. [o] Leaving a game needs handling
+    9. [X] Leaving a game needs handling
         1. [X] Should allow reconnect if no other games are joined
-        2. [ ] Should forfeit if another game joined
+        2. [X] Should forfeit if another game joined
     10. [ ] I want everything to be responsive and usable on mobile devices
         1. [ ] On desktop resolutions 
             1. [ ] The squares should be a pleasant enough
@@ -33,9 +33,9 @@
     12. [ ] Make a tutorial
 
 = What I was doing last =
-            * [ ] When everyone leaves the room, game closes out
-                * [ ] No longer accessible
-                    * [ ] Join Button not present
+            * [o] When everyone leaves the room, game closes out
+                * [X] No longer accessible
+                    * [X] Join Button not present
                 * [ ] But the record is kept somewhere
  
  

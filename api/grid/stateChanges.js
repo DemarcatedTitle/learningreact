@@ -7,14 +7,8 @@
 // Currently that is backward and I don't know how I got this far without realizing that.
 // Normal coordinates are X(horizontal) ,Y(vertical)
 const { List, fromJS } = require("immutable");
+const { otherPlayer } = require("../utilities.js");
 
-function otherPlayer(player) {
-    if (player === 1) {
-        return 0;
-    } else {
-        return 1;
-    }
-}
 const whichWay = {
     // Player is an integer, 0 or 1 right now
     // The second one sets the player square to where it is directed

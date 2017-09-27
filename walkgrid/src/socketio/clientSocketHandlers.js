@@ -7,10 +7,16 @@ exports.chatMessages = function(messages) {
 
 exports.rooms = function(rooms) {
     const roomObj = JSON.parse(rooms);
-    this.setState({
-        rooms: roomObj.rooms,
-        currentRoom: roomObj.currentRoom
-    });
+
+    console.log(roomObj);
+    if (roomObj.currentRoom) {
+        this.setState({
+            rooms: roomObj.rooms,
+            currentRoom: roomObj.currentRoom
+        });
+    } else {
+        this.setState({ rooms: roomObj.rooms });
+    }
 };
 
 exports.error = function(error) {

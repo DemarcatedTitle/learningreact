@@ -62,7 +62,7 @@ class Login extends React.Component {
             from: { pathname: "/" }
         };
         if (this.props.loggedIn) {
-            return <Redirect to={{ pathname: "/auth" }} />;
+            return <Redirect to={{ pathname: "/" }} />;
         } else {
             return (
                 <div className="">

@@ -12,6 +12,7 @@ import SocketContainer from "./socketio/SocketContainer.js";
 import PrivateRoute from "./PrivateRoute.js";
 import ChatBox from "./chat/ChatBox.js";
 import GridChat from "./GridChat.js";
+import GameHistory from "./GameHistory.js";
 import LoggedIn from "./account/LoggedIn.js";
 import Login from "./Login.js";
 import NewRoom from "./chat/NewRoom.js";
@@ -42,7 +43,7 @@ class Routes extends Component {
                             {" "}
                         </li>
                         <li><Link to="/">Home</Link></li>
-                        <li><Link to="/auth">Auth</Link></li>
+                        <li><Link to="/history">History</Link></li>
                         <LoggedIn
                             logout={this.props.logout}
                             loggedIn={this.props.loggedIn}
@@ -78,8 +79,8 @@ class Routes extends Component {
                             chatProps={this.props.chatProps}
                             loggedIn={this.props.loggedIn}
                             socket={this.props.socket}
-                            path="/auth"
-                            component={GridChat}
+                            path="/history"
+                            component={GameHistory}
                         />
                     </div>
                 </div>
