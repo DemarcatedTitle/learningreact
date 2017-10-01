@@ -1,6 +1,6 @@
 // eslint-disable-next-line
 import React from "react";
-const { List, fromJS } = require("immutable");
+// const { List, fromJS } = require("immutable");
 /* eslint-disable no-console */
 //Plans:
 // [ ]I want to be able to set the grid size in the browser

@@ -8,7 +8,6 @@ exports.chatMessages = function(messages) {
 exports.rooms = function(rooms) {
     const roomObj = JSON.parse(rooms);
 
-    console.log(roomObj);
     if (roomObj.currentRoom) {
         this.setState({
             rooms: roomObj.rooms,
@@ -55,8 +54,14 @@ exports.addAllListeners = function(socket) {
         return this.setState({ occupied: fromJS(occupied) });
     });
     socket.on("outcome", outcome => {
-        console.log(outcome);
         return this.setState({ outcome: outcome });
+    });
+    socket.on("gameHistory", gameHistory => {
+        console.log(gameHistory);
+        console.log("Socket game history");
+        return this.setState({
+            gameHistory: gameHistory
+        });
     });
     socket.on("users", exports.users.bind(this));
     socket.on("userJoined", user => {

@@ -35,9 +35,11 @@ class SocketContainer extends Component {
             users: [],
             currentUser: "",
             you: "",
-            outcome: ""
+            outcome: "",
+            gameHistory: []
         };
         this.logout = this.logout.bind(this);
+        this.gameHistory = this.gameHistory.bind(this);
         this.chatMessage = this.chatMessage.bind(this);
         this.login = this.login.bind(this);
         this.joinChat = this.joinChat.bind(this);
@@ -82,6 +84,10 @@ class SocketContainer extends Component {
                 }
             });
         });
+    }
+    gameHistory() {
+        console.log("history request function");
+        socket.emit("gameHistory", "request");
     }
     createRoom(payload) {
         socket.emit("new room", payload);
@@ -171,6 +177,10 @@ class SocketContainer extends Component {
             you: this.state.you,
             outcome: this.state.outcome
         };
+        const historyProps = {
+            gameHistoryRequest: this.gameHistory,
+            gameHistory: this.state.gameHistory
+        };
         return (
             <Routes
                 loggedIn={this.state.loggedIn}
@@ -179,6 +189,7 @@ class SocketContainer extends Component {
                 login={this.login}
                 gridProps={gridProps}
                 chatProps={chatProps}
+                historyProps={historyProps}
                 socket={socket}
             />
         );

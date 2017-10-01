@@ -9,7 +9,8 @@ const {
     chatlogs,
     rooms,
     games,
-    activePlayers
+    activePlayers,
+    gameHistory
 } = require("./gamestate.js");
 let io;
 const JWT = require("jsonwebtoken");
@@ -21,22 +22,28 @@ function chatMessageEmission(room, chatlogs) {
 }
 function forfeitPrevious(username, socket, currentRoom) {
     if (activePlayers.has(username)) {
-        console.log(activePlayers);
         let previousRoom = activePlayers.get(username);
-        const prevPlayers = games.get(previousRoom).players;
-        const winnerMap = new Map(prevPlayers);
-        winnerMap.delete(username);
-        const winner = winnerMap.keys().next().value;
-        io
-            .in(previousRoom)
-            .emit(
-                "outcome",
-                `${username} has forfeited, ${winner} is the winner!`
-            );
+        let outcome;
+        if (!games.get(previousRoom).outcome) {
+            const prevPlayers = games.get(previousRoom).players;
+            const winnerMap = new Map(prevPlayers);
+            winnerMap.delete(username);
+            const winner = winnerMap.keys().next().value;
+            outcome = `${username} has forfeited, ${winner} is the winner!`;
+            gameHistory.push({
+                date: new Date(),
+                players: Array.from(prevPlayers.keys()),
+                outcome: outcome
+            });
+            games.get(previousRoom).outcome = outcome;
+        } else {
+            outcome = games.get(previousRoom).outcome;
+        }
+        console.log(gameHistory);
+        io.in(previousRoom).emit("outcome", outcome);
         socket.leave(previousRoom, function(socket) {});
         io.in(previousRoom).clients((error, clients) => {
             if (error) throw error;
-            console.log(clients);
             if (clients.length === 0) {
                 rooms.delete(previousRoom);
                 io.emit(
@@ -292,6 +299,11 @@ exports.io = function(listener, secret, users) {
                     }
                 }
             });
+        });
+        socket.on("gameHistory", function(request) {
+            console.log("gameHistory requested");
+            console.log(gameHistory);
+            io.to(socket.id).emit("gameHistory", gameHistory);
         });
     });
     const repl = require("repl");

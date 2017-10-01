@@ -12,6 +12,7 @@ const PrivateRoute = ({
     loggedIn,
     chatProps,
     gridProps,
+    historyProps,
     ...rest
 }) => (
     <Route
@@ -22,6 +23,7 @@ const PrivateRoute = ({
                       socket={socket}
                       chatProps={chatProps}
                       gridProps={gridProps}
+                      historyProps={historyProps}
                       {...props}
                   />
                 : <Redirect

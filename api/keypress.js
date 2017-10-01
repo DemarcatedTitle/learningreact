@@ -4,7 +4,8 @@ const {
     chatlogs,
     rooms,
     games,
-    activePlayers
+    activePlayers,
+    gameHistory
 } = require("./gamestate.js");
 function changeState(state, player, direction) {
     let tempState = moveSquare(state, player, direction);
@@ -32,21 +33,41 @@ exports.keypress = function keypress(key) {
     ]);
 
     function frontUpdate(key) {
-        if (state.collision === undefined) {
+        if (state.collision === undefined && !state.outcome) {
             changeState(
                 state,
                 games.get(currentRoom).players.get(username),
                 keyConfigs.get(key)
             );
         }
+        if (state.outcome) {
+            io.in(currentRoom).emit("outcome", state.outcome);
+            socket.removeAllListeners("keypress");
+        }
+
         io.in(currentRoom).emit("coords", state.coords);
         io.in(currentRoom).emit("occupied", state.occupied);
         if (state.collision) {
-            const winnerMap = new Map(state.players);
-            winnerMap.delete(username);
-            const winner = winnerMap.keys().next().value;
-            console.log(winner);
-            io.in(currentRoom).emit("outcome", `${winner} is the winner!`);
+            if (!state.outcome) {
+                const winnerMap = new Map(state.players);
+                winnerMap.delete(username);
+                const winner = winnerMap.keys().next().value;
+                const outcome = `${winner} is the winner!`;
+                state.outcome = outcome;
+                gameHistory.push({
+                    date: new Date(),
+                    players: Array.from(state.players.keys()),
+                    outcome: outcome
+                });
+            }
+            // io.in(currentRoom).clients((error, clients) => {
+            //     if (error) throw error;
+            //     clients.map(function (client) {
+
+            //     })
+            // });
+            io.in(currentRoom).emit("outcome", state.outcome);
+            socket.removeAllListeners("keypress");
         }
     }
     frontUpdate(key);

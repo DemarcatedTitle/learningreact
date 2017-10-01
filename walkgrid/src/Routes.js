@@ -78,6 +78,7 @@ class Routes extends Component {
                             gridProps={this.props.gridProps}
                             chatProps={this.props.chatProps}
                             loggedIn={this.props.loggedIn}
+                            historyProps={this.props.historyProps}
                             socket={this.props.socket}
                             path="/history"
                             component={GameHistory}
