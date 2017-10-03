@@ -32,6 +32,11 @@ exports.keypress = function keypress(key) {
         ["d", "right"]
     ]);
 
+    function isAlone(players) {
+        if (players.size < 2) {
+            return true;
+        }
+    }
     function frontUpdate(key) {
         if (state.collision === undefined && !state.outcome) {
             changeState(
