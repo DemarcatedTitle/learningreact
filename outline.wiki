@@ -35,3 +35,11 @@
 
 = What I was doing last =
 
+    1. [ ] One player in a room should(options):
+        1. [ ] Have a waiting lobby type thing, a pregame practice mode
+        2. [ ] Do nothing that can affect chances of winning the game
+        3. [ ] 
+
+There should be a separation of "grid" init and "match" init
+    Created an isAlone function that should help facilitate this.
+
