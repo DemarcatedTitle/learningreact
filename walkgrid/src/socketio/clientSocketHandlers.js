@@ -7,10 +7,15 @@ exports.chatMessages = function(messages) {
 
 exports.rooms = function(rooms) {
     const roomObj = JSON.parse(rooms);
-    this.setState({
-        rooms: roomObj.rooms,
-        currentRoom: roomObj.currentRoom
-    });
+
+    if (roomObj.currentRoom) {
+        this.setState({
+            rooms: roomObj.rooms,
+            currentRoom: roomObj.currentRoom
+        });
+    } else {
+        this.setState({ rooms: roomObj.rooms });
+    }
 };
 
 exports.error = function(error) {
@@ -47,6 +52,16 @@ exports.addAllListeners = function(socket) {
     });
     socket.on("occupied", occupied => {
         return this.setState({ occupied: fromJS(occupied) });
+    });
+    socket.on("outcome", outcome => {
+        return this.setState({ outcome: outcome });
+    });
+    socket.on("gameHistory", gameHistory => {
+        console.log(gameHistory);
+        console.log("Socket game history");
+        return this.setState({
+            gameHistory: gameHistory
+        });
     });
     socket.on("users", exports.users.bind(this));
     socket.on("userJoined", user => {

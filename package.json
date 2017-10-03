@@ -8,7 +8,10 @@
     "immutable": "^3.8.1",
     "inert": "^4.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^4.8.0",
+    "eslint-plugin-react": "^7.4.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

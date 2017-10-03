@@ -1,6 +1,6 @@
 = back-end =
     * [X] Refreshing a page breaks being able to control your square
-    * [ ] Joining a game and moving around still moves you around in your old game
+    * [X] Joining a game and moving around still moves you around in your old game
 = front-end =
     * [ ] Joining from a non refreshed browser isn't updating
     * [ ] keypress and probably other socket events are firing twice
@@ -9,3 +9,4 @@
     * [ ] current room is removed when a different user changes rooms
         * [ ] This might take some figuring out in terms of game rules and logic
     * [ ] 2nd player overlaps 1st player, probably minor depending on rules
+    * [ ] Sometimes going over food doesn't grab it or doesn't appear to grab it

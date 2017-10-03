@@ -1,11 +1,17 @@
 /* eslint-disable no-console */
-/* eslint-disable no-unused-vars */
 /* eslint-disable indent */
 const { List, fromJS } = require("immutable");
 const keypress = require("./keypress.js").keypress;
 const gameInit = require("./gameInit.js").gameInit;
 const moveSquare = require("./grid/stateChanges.js").moveSquare;
-const { chatters, chatlogs, rooms, games } = require("./gamestate.js");
+const {
+    chatters,
+    chatlogs,
+    rooms,
+    games,
+    activePlayers,
+    gameHistory
+} = require("./gamestate.js");
 let io;
 const JWT = require("jsonwebtoken");
 function chatMessageEmission(room, chatlogs) {
@@ -13,6 +19,53 @@ function chatMessageEmission(room, chatlogs) {
         room: room,
         logs: chatlogs.get(room)
     });
+}
+function forfeitPrevious(username, socket, currentRoom) {
+    if (activePlayers.has(username)) {
+        let previousRoom = activePlayers.get(username);
+        let outcome;
+        if (!games.get(previousRoom).outcome) {
+            const prevPlayers = games.get(previousRoom).players;
+            const winnerMap = new Map(prevPlayers);
+            winnerMap.delete(username);
+            const winner = winnerMap.keys().next().value;
+            outcome = `${username} has forfeited, ${winner} is the winner!`;
+            gameHistory.push({
+                date: new Date(),
+                players: Array.from(prevPlayers.keys()),
+                outcome: outcome
+            });
+            games.get(previousRoom).outcome = outcome;
+        } else {
+            outcome = games.get(previousRoom).outcome;
+        }
+        console.log(gameHistory);
+        io.in(previousRoom).emit("outcome", outcome);
+        socket.leave(previousRoom, function(socket) {});
+        io.in(previousRoom).clients((error, clients) => {
+            if (error) throw error;
+            if (clients.length === 0) {
+                rooms.delete(previousRoom);
+                io.emit(
+                    "rooms",
+                    JSON.stringify({
+                        rooms: Array.from(rooms.keys())
+                    })
+                );
+            }
+        });
+    }
+}
+
+function updateRoomLists() {
+    // Iterate over each room
+    io.in(currentRoom).emit(
+        "rooms",
+        JSON.stringify({
+            rooms: Array.from(rooms.keys())
+            // currentRoom: currentRoom
+        })
+    );
 }
 exports.io = function(listener, secret, users) {
     io = require("socket.io")(listener);
@@ -34,9 +87,15 @@ exports.io = function(listener, secret, users) {
     });
     io.on("connection", function(socket, username) {
         function gameUpdates(socket, state, username) {
+            console.log(games.get(currentRoom).players.size);
             io.in(currentRoom).emit("grid", state.grid);
             io.in(currentRoom).emit("coords", state.coords);
             io.in(currentRoom).emit("occupied", state.occupied);
+            if (games.get(currentRoom).players.size === 1) {
+                io.in(currentRoom).emit("outcome", "Waiting");
+            } else {
+                io.in(currentRoom).emit("outcome", "Game In Progress");
+            }
             // The line below returns the "you" player number
             io
                 .to(socket.id)
@@ -68,7 +127,6 @@ exports.io = function(listener, secret, users) {
             console.log(reason);
             const roomsLeaving = Object.keys(socket.rooms);
             roomsLeaving.forEach(function(room) {
-                console.log(room);
                 console.log(`${chatters.get(socket.id)} just left`);
                 socket.to(room).emit("userLeft", chatters.get(socket.id));
             });
@@ -80,6 +138,7 @@ exports.io = function(listener, secret, users) {
                 if (err) {
                     io.emit("error", "Something went wrong");
                 } else if (decoded.username) {
+                    forfeitPrevious(decoded.username, socket, currentRoom);
                     rooms.set(room, io.of(room));
                     chatlogs.set(currentRoom, []);
                     let grid = [];
@@ -114,25 +173,15 @@ exports.io = function(listener, secret, users) {
                             })
                         );
                         gameUpdates(socket, state, decoded.username);
+                        activePlayers.set(decoded.username, currentRoom);
                     });
-                    // io.in(currentRoom).emit("grid", state.grid);
-                    // io.in(currentRoom).emit("coords", state.coords);
-                    // io.in(currentRoom).emit("occupied", state.occupied);
-                    // io
-                    //     .to(socket.id)
-                    //     .emit(
-                    //         "you",
-                    //         games.get(currentRoom).players.get(decoded.username)
-                    //     );
-                    // io.to(socket.id).emit("grid", state.grid);
-                    // io.to(socket.id).emit("coords", state.coords);
-                    // io.to(socket.id).emit("occupied", state.occupied);
                     let context = {
                         currentRoom,
                         username: decoded.username,
                         io,
                         socket
                     };
+                    socket.removeAllListeners("keypress");
                     socket.on("keypress", keypress.bind(context));
                 }
             });
@@ -176,6 +225,7 @@ exports.io = function(listener, secret, users) {
                 if (err) {
                     io.to(socket.id).emit("error", "Something went wrong");
                 } else if (decoded.username) {
+                    forfeitPrevious(decoded.username, socket, currentRoom);
                     io.in(currentRoom).clients(function(error, clients) {
                         if (!clients.includes(users)) {
                             socket
@@ -219,6 +269,7 @@ exports.io = function(listener, secret, users) {
 
                         let state = games.get(currentRoom);
                         gameUpdates(socket, state, decoded.username);
+                        activePlayers.set(decoded.username, currentRoom);
                     });
                     let context = {
                         currentRoom,
@@ -249,5 +300,12 @@ exports.io = function(listener, secret, users) {
                 }
             });
         });
+        socket.on("gameHistory", function(request) {
+            console.log("gameHistory requested");
+            console.log(gameHistory);
+            io.to(socket.id).emit("gameHistory", gameHistory);
+        });
     });
+    const repl = require("repl");
+    repl.start("> ").context.io = io;
 };

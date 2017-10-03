@@ -34,9 +34,12 @@ class SocketContainer extends Component {
             listeners: listeners,
             users: [],
             currentUser: "",
-            you: ""
+            you: "",
+            outcome: "",
+            gameHistory: []
         };
         this.logout = this.logout.bind(this);
+        this.gameHistory = this.gameHistory.bind(this);
         this.chatMessage = this.chatMessage.bind(this);
         this.login = this.login.bind(this);
         this.joinChat = this.joinChat.bind(this);
@@ -82,6 +85,10 @@ class SocketContainer extends Component {
             });
         });
     }
+    gameHistory() {
+        console.log("history request function");
+        socket.emit("gameHistory", "request");
+    }
     createRoom(payload) {
         socket.emit("new room", payload);
     }
@@ -101,7 +108,6 @@ class SocketContainer extends Component {
     }
     handleKeyPress(event) {
         // Some kind of tick might make it feel less janky
-        console.log("keypress");
         if (isKeydownAvailable) {
             if (event.key === "ArrowUp") {
                 socket.emit("keypress", event.key);
@@ -168,7 +174,12 @@ class SocketContainer extends Component {
             grid: this.state.grid,
             gridHeight: this.props.gridHeight,
             handleKeyPress: this.handleKeyPress,
-            you: this.state.you
+            you: this.state.you,
+            outcome: this.state.outcome
+        };
+        const historyProps = {
+            gameHistoryRequest: this.gameHistory,
+            gameHistory: this.state.gameHistory
         };
         return (
             <Routes
@@ -178,6 +189,7 @@ class SocketContainer extends Component {
                 login={this.login}
                 gridProps={gridProps}
                 chatProps={chatProps}
+                historyProps={historyProps}
                 socket={socket}
             />
         );
