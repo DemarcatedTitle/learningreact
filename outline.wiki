@@ -29,33 +29,9 @@
         2. [ ] On mobile resolutions
             1. [ ] Everything should still be present and usable
                 1. [ ] But displaying the grid/chat should be toggled
-    11. [ ] Establish Win and Lose Conditions
-    12. [ ] Make a tutorial
+    11. [X] Establish Win and Lose Conditions
+    12. [X] Make a game history page
+    13. [ ] Make a tutorial
 
 = What I was doing last =
-            * [o] When everyone leaves the room, game closes out
-                * [X] No longer accessible
-                    * [X] Join Button not present
-                * [ ] But the record is kept somewhere
- 
- 
-    * Establish win/lose conditions
-        * Game state will have a record of score and final result
-        * Api will send a message saying "you won/lost"
-            * [X] Collision detection will be the initial win/loss state
-                * [X] If a player collides with themself, loss
-                * [X] If a player collides with an enemy, loss
-                    * [X] I think this will be easier. If moving coord exists 
-                          within enemy's body, collision detected
-                    * [X] Attach a win/loss condition
-        * Front-end will act appropriately
-            * [X] Text Overlay saying if you won/loss
-            * [ ] Scoreboard displaying score ?
-            * [X] Losing player can't move
-            * [ ] Winning player maybe can move? 
-            * [ ] Chat continues to work
-            * [ ] When everyone leaves the room, game closes out
-                * [ ] No longer accessible
-                    * [ ] Join Button not present
-                * [ ] But the record is kept somewhere
-              
+
