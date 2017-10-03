@@ -38,9 +38,7 @@ class WalkGrid extends React.PureComponent {
                     onKeyPress={this.handleKeyPress}
                     className="grid"
                 >
-                    <p className="outcome">
-                        {this.props.outcome}
-                    </p>
+                    <p className="outcome">{this.props.outcome}</p>
                     <div className="Announcement">
                         <AnnouncementBox
                             gridHeight={this.props.gridHeight}
@@ -72,12 +70,13 @@ class WalkGrid extends React.PureComponent {
 class AnnouncementBox extends React.PureComponent {
     render() {
         const gridHeight = this.props.gridHeight;
-        const outOfBounds = this.props.player.coords.get(0) >= gridHeight ||
+        const outOfBounds =
+            this.props.player.coords.get(0) >= gridHeight ||
             this.props.player.coords.get(1) >= gridHeight ||
             this.props.player.coords.get(0) < 0 ||
             this.props.player.coords.get(1) < 0
-            ? true
-            : false;
+                ? true
+                : false;
         // if (
         //     this.props.player.coords.get(0) >= gridHeight ||
         //     this.props.player.coords.get(1) >= gridHeight
@@ -88,7 +87,10 @@ class AnnouncementBox extends React.PureComponent {
         const classes = `${outOfBounds ? "outOfBounds" : ""}`;
         return (
             <div className={classes}>
-                {`Player ${this.props.player.name} Coordinates: ${this.props.player.coords.join(",")}  ${isOutOfBounds}`}
+                {`Player ${this.props.player
+                    .name} Coordinates: ${this.props.player.coords.join(
+                    ","
+                )}  ${isOutOfBounds}`}
             </div>
         );
     }
@@ -100,7 +102,9 @@ class Space extends React.PureComponent {
         const you = this.props.you;
         const food = this.props.food;
         const enemy = this.props.enemy;
-        const classes = `space ${food ? "food" : ""} ${you ? "you" : ""} ${enemy ? "enemy" : ""}`;
+        const classes = `space ${food ? "food" : ""} ${you ? "you" : ""} ${enemy
+            ? "enemy"
+            : ""}`;
         return <div className={classes} />;
     }
 }
@@ -149,7 +153,6 @@ class Rows extends React.PureComponent {
                             />
                         );
                     })}
-
                 </div>
             );
         });
