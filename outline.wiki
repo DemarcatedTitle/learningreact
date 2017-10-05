@@ -10,10 +10,9 @@
         2. [X] Player's control different units
         3. [X] After x people, people that join are observers only
     6. [X] Make players color coded
-    7. [ ] One player in a room should(options):
-        1. [ ] Have a waiting lobby type thing, a pregame practice mode
-        2. [ ] Do nothing that can affect chances of winning the game
-        3. [ ] 
+    7. [X] One player in a room should(options):
+        1. [X] Have a waiting lobby type thing, a pregame practice mode
+        2. [X] Do nothing that can affect chances of winning the game
     8. [ ] There needs to be a smooth separation of player control
         1. [ ] Right now if you create a game and join a game two events get
                sent
@@ -34,12 +33,4 @@
     13. [ ] Make a tutorial
 
 = What I was doing last =
-
-    1. [ ] One player in a room should(options):
-        1. [ ] Have a waiting lobby type thing, a pregame practice mode
-        2. [ ] Do nothing that can affect chances of winning the game
-        3. [ ] 
-
-There should be a separation of "grid" init and "match" init
-    Created an isAlone function that should help facilitate this.
 

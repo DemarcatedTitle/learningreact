@@ -39,7 +39,6 @@ function forfeitPrevious(username, socket, currentRoom) {
         } else {
             outcome = games.get(previousRoom).outcome;
         }
-        console.log(gameHistory);
         io.in(previousRoom).emit("outcome", outcome);
         socket.leave(previousRoom, function(socket) {});
         io.in(previousRoom).clients((error, clients) => {
@@ -87,7 +86,6 @@ exports.io = function(listener, secret, users) {
     });
     io.on("connection", function(socket, username) {
         function gameUpdates(socket, state, username) {
-            console.log(games.get(currentRoom).players.size);
             io.in(currentRoom).emit("grid", state.grid);
             io.in(currentRoom).emit("coords", state.coords);
             io.in(currentRoom).emit("occupied", state.occupied);
@@ -198,8 +196,8 @@ exports.io = function(listener, secret, users) {
                             console.log(
                                 `The following just heard:
                         ${clients.map(function(id) {
-                                    return chatters.get(id);
-                                })}
+                            return chatters.get(id);
+                        })}
                         `
                             );
                         });
@@ -237,7 +235,10 @@ exports.io = function(listener, secret, users) {
                         if (
                             games.get(room).players.get(decoded.username) !== 0
                         ) {
+                            let tempState = gameInit();
                             games.get(room).players.set(decoded.username, 1);
+                            tempState.players = games.get(room).players;
+                            games.set(currentRoom, tempState);
                         } else {
                         }
                         io.to(socket.id).emit(
@@ -266,6 +267,9 @@ exports.io = function(listener, secret, users) {
                                 logs: chatlogs.get(room)
                             })
                         );
+                        // const state = gameInit();
+                        // state.players = new Map([[decoded.username, 0]]);
+                        // games.set(currentRoom, state);
 
                         let state = games.get(currentRoom);
                         gameUpdates(socket, state, decoded.username);
@@ -286,13 +290,15 @@ exports.io = function(listener, secret, users) {
                     } else if (
                         // If there is an available slot and you aren't in the game
                         games.get(room).players.get(decoded.username) ===
-                            undefined && games.get(room).players.size < 2
+                            undefined &&
+                        games.get(room).players.size < 2
                     ) {
                         socket.removeAllListeners("keypress");
                         socket.on("keypress", keypress.bind(context));
                     } else if (
                         games.get(room).players.get(decoded.username) ===
-                            undefined && games.get(room).players.size < 2
+                            undefined &&
+                        games.get(room).players.size < 2
                     ) {
                         // socket.removeAllListeners("keypress");
                         socket.on("keypress", keypress.bind(context));

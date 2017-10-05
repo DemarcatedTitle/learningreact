@@ -73,6 +73,11 @@ function checkEnemyCollision(state, currentPlayer, newLocation) {
         return false;
     }
 }
+function isAlone(players) {
+    if (players.size < 2) {
+        return true;
+    }
+}
 exports.moveSquare = (state, player, direction) => {
     const occupied = state.occupied;
     const listCoords = state.coords;
@@ -81,7 +86,9 @@ exports.moveSquare = (state, player, direction) => {
     const newLocation = whichWay[direction](player, listCoords, occupied);
     const indexOfOccupied = occupied.indexOf(newLocation);
     const newOccupied = checkOverlap(occupied, indexOfOccupied);
-    const collision = checkEnemyCollision(state, player, newLocation);
+    const collision = isAlone(state.players)
+        ? false
+        : checkEnemyCollision(state, player, newLocation);
     if (collision) {
         return {
             collision: {
