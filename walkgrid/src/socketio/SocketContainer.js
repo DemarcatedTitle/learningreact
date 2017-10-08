@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars */
 import React, { Component } from "react";
 import Routes from "../Routes.js";
 // const { List, fromJS } = require("immutable");
@@ -13,7 +15,7 @@ class SocketContainer extends Component {
             localStorage.getItem("idtoken") !== null ? true : false;
         let listeners = false;
         if (loggedIn) {
-            socket = io("localhost:8000", {
+            socket = io(`${location.host}`, {
                 query: {
                     token: localStorage.getItem("idtoken")
                 }
@@ -65,7 +67,7 @@ class SocketContainer extends Component {
                     window.localStorage.setItem("idtoken", data.idtoken);
                     window.localStorage.setItem("username", data.username);
                     console.log("located in fetch socket =");
-                    socket = io("localhost:8000", {
+                    socket = io(`${location.host}`, {
                         query: {
                             token: localStorage.getItem("idtoken")
                         }
