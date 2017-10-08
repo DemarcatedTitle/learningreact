@@ -31,6 +31,9 @@
     11. [X] Establish Win and Lose Conditions
     12. [X] Make a game history page
     13. [ ] Make a tutorial
+    14. [ ] A production version
 
 = What I was doing last =
-
+bugfix
+    * [ ] You can use duplicate game names
+Looking at cleaning up the ui

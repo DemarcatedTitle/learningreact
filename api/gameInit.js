@@ -28,14 +28,19 @@ exports.gameInit = function gameInit() {
     }
     let occupied = [];
     for (let i = 0; i < 25; i += 1) {
-        occupied.push([
+        let currentSpot = [
             getRandomInt(0, gridHeight),
             getRandomInt(0, gridHeight)
-        ]);
+        ];
+        occupied.push(currentSpot);
     }
+    const immOccupied = fromJS(occupied);
+    let newimmOcc = immOccupied.filter(function(value) {
+        return immOccupied.indexOf(value) === immOccupied.lastIndexOf(value);
+    });
     return {
         coords: startingPoints,
-        occupied: fromJS(occupied),
+        occupied: newimmOcc,
         grid: grid
     };
 };

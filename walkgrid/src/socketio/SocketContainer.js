@@ -1,21 +1,16 @@
-/* eslint-disable no-console */
-/* eslint-disable no-unused-vars */
 import React, { Component } from "react";
 import Routes from "../Routes.js";
-const { List, fromJS } = require("immutable");
+// const { List, fromJS } = require("immutable");
 const io = require("socket.io-client");
 const sockethandlers = require("./clientSocketHandlers.js");
-const roomhandler = require("./clientSocketHandlers.js").rooms;
+// const roomhandler = require("./clientSocketHandlers.js").rooms;
 let socket;
 let isKeydownAvailable = true;
 class SocketContainer extends Component {
     constructor(props) {
         super(props);
-        const loggedIn = localStorage.getItem("idtoken") !== null
-            ? true
-            : false;
-        // const loggedIn = true;
-        // Temporary set Logged in as true to set it all up
+        const loggedIn =
+            localStorage.getItem("idtoken") !== null ? true : false;
         let listeners = false;
         if (loggedIn) {
             socket = io("localhost:8000", {
@@ -48,11 +43,9 @@ class SocketContainer extends Component {
         this.addSocketIOListeners = sockethandlers.addAllListeners.bind(this);
     }
     logout() {
-        let history = this.props.history;
         window.localStorage.clear();
         socket.close();
         return this.setState({ loggedIn: false });
-        // return history.push("/");
     }
     login(event, creds) {
         event.preventDefault();
@@ -66,7 +59,8 @@ class SocketContainer extends Component {
         }).then(response => {
             response.json().then(data => {
                 if (
-                    data.idtoken !== "undefined" && data.idtoken !== undefined
+                    data.idtoken !== "undefined" &&
+                    data.idtoken !== undefined
                 ) {
                     window.localStorage.setItem("idtoken", data.idtoken);
                     window.localStorage.setItem("username", data.username);
@@ -152,7 +146,6 @@ class SocketContainer extends Component {
         // window.removeEventListener("keypress", this.handleKeyPress);
     }
     render() {
-        const login = this.login;
         const roomsProps = {
             rooms: this.state.rooms,
             joinChat: this.joinChat,

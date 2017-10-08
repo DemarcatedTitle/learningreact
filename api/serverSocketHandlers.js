@@ -85,19 +85,17 @@ exports.io = function(listener, secret, users) {
         });
     });
     io.on("connection", function(socket, username) {
-        function gameUpdates(socket, state, username) {
-            io.in(currentRoom).emit("grid", state.grid);
-            io.in(currentRoom).emit("coords", state.coords);
-            io.in(currentRoom).emit("occupied", state.occupied);
-            if (games.get(currentRoom).players.size === 1) {
-                io.in(currentRoom).emit("outcome", "Waiting");
+        function gameUpdates(socket, state, username, room) {
+            io.in(room).emit("grid", state.grid);
+            io.in(room).emit("coords", state.coords);
+            io.in(room).emit("occupied", state.occupied);
+            if (games.get(room).players.size === 1) {
+                io.in(room).emit("outcome", "Waiting");
             } else {
-                io.in(currentRoom).emit("outcome", "Game In Progress");
+                io.in(room).emit("outcome", "Game In Progress");
             }
             // The line below returns the "you" player number
-            io
-                .to(socket.id)
-                .emit("you", games.get(currentRoom).players.get(username));
+            io.to(socket.id).emit("you", games.get(room).players.get(username));
         }
         let currentRoom = "";
         let userToken = socket.handshake.query.token;
@@ -136,51 +134,114 @@ exports.io = function(listener, secret, users) {
                 if (err) {
                     io.emit("error", "Something went wrong");
                 } else if (decoded.username) {
-                    forfeitPrevious(decoded.username, socket, currentRoom);
-                    rooms.set(room, io.of(room));
-                    chatlogs.set(currentRoom, []);
-                    let grid = [];
-                    const state = gameInit();
-                    state.players = new Map([[decoded.username, 0]]);
-                    games.set(currentRoom, state);
-                    socket.join(room, () => {
-                        socket.broadcast.emit(
-                            "rooms",
-                            JSON.stringify({
-                                rooms: Array.from(rooms.keys())
-                            })
-                        );
-                        io.in(currentRoom).clients((error, clients) => {
-                            if (error) throw error;
-                            io.to(socket.id).emit(
-                                "users",
+                    // Recursively find a number to append to room name to allow people to have an arbitrary number of rooms
+                    function roomN(room, rooms, digit) {
+                        if (rooms.has(`${room}-${digit}`) === true) {
+                            return roomN(room, rooms, digit + 1);
+                        } else {
+                            return `${room}-${digit}`;
+                        }
+                    }
+                    let i = 2;
+                    if (rooms.has(room) === false) {
+                        forfeitPrevious(decoded.username, socket, currentRoom);
+                        rooms.set(room, io.of(room));
+                        chatlogs.set(currentRoom, []);
+                        let grid = [];
+                        const state = gameInit();
+                        state.players = new Map([[decoded.username, 0]]);
+                        games.set(currentRoom, state);
+                        socket.join(room, () => {
+                            socket.broadcast.emit(
+                                "rooms",
                                 JSON.stringify({
-                                    users: clients.map(client =>
-                                        chatters.get(client)
-                                    ),
-                                    currentUser: decoded.username
+                                    rooms: Array.from(rooms.keys())
                                 })
                             );
-                        });
+                            io.in(currentRoom).clients((error, clients) => {
+                                if (error) throw error;
+                                io.to(socket.id).emit(
+                                    "users",
+                                    JSON.stringify({
+                                        users: clients.map(client =>
+                                            chatters.get(client)
+                                        ),
+                                        currentUser: decoded.username
+                                    })
+                                );
+                            });
 
-                        io.to(socket.id).emit(
-                            "rooms",
-                            JSON.stringify({
-                                rooms: Array.from(rooms.keys()),
-                                currentRoom: room
-                            })
-                        );
-                        gameUpdates(socket, state, decoded.username);
-                        activePlayers.set(decoded.username, currentRoom);
-                    });
-                    let context = {
-                        currentRoom,
-                        username: decoded.username,
-                        io,
-                        socket
-                    };
-                    socket.removeAllListeners("keypress");
-                    socket.on("keypress", keypress.bind(context));
+                            io.to(socket.id).emit(
+                                "rooms",
+                                JSON.stringify({
+                                    rooms: Array.from(rooms.keys()),
+                                    currentRoom: room
+                                })
+                            );
+                            gameUpdates(socket, state, decoded.username, room);
+                            activePlayers.set(decoded.username, currentRoom);
+                        });
+                        let context = {
+                            room,
+                            username: decoded.username,
+                            io,
+                            socket
+                        };
+                        socket.removeAllListeners("keypress");
+                        socket.on("keypress", keypress.bind(context));
+                    } else {
+                        let numberedRoom = roomN(room, rooms, i);
+                        forfeitPrevious(decoded.username, socket, numberedRoom);
+                        rooms.set(numberedRoom, io.of(numberedRoom));
+                        chatlogs.set(numberedRoom, []);
+                        let grid = [];
+                        const state = gameInit();
+                        state.players = new Map([[decoded.username, 0]]);
+                        games.set(numberedRoom, state);
+                        socket.join(numberedRoom, () => {
+                            socket.broadcast.emit(
+                                "rooms",
+                                JSON.stringify({
+                                    rooms: Array.from(rooms.keys())
+                                })
+                            );
+                            io.in(numberedRoom).clients((error, clients) => {
+                                if (error) throw error;
+                                io.to(socket.id).emit(
+                                    "users",
+                                    JSON.stringify({
+                                        users: clients.map(client =>
+                                            chatters.get(client)
+                                        ),
+                                        currentUser: decoded.username
+                                    })
+                                );
+                            });
+
+                            io.to(socket.id).emit(
+                                "rooms",
+                                JSON.stringify({
+                                    rooms: Array.from(rooms.keys()),
+                                    currentRoom: numberedRoom
+                                })
+                            );
+                            gameUpdates(
+                                socket,
+                                state,
+                                decoded.username,
+                                numberedRoom
+                            );
+                            activePlayers.set(decoded.username, numberedRoom);
+                        });
+                        let context = {
+                            room: numberedRoom,
+                            username: decoded.username,
+                            io,
+                            socket
+                        };
+                        socket.removeAllListeners("keypress");
+                        socket.on("keypress", keypress.bind(context));
+                    }
                 }
             });
         });
@@ -272,11 +333,11 @@ exports.io = function(listener, secret, users) {
                         // games.set(currentRoom, state);
 
                         let state = games.get(currentRoom);
-                        gameUpdates(socket, state, decoded.username);
+                        gameUpdates(socket, state, decoded.username, room);
                         activePlayers.set(decoded.username, currentRoom);
                     });
                     let context = {
-                        currentRoom,
+                        room,
                         username: decoded.username,
                         io,
                         socket

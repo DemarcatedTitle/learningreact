@@ -8,11 +8,10 @@ class users extends Component {
     }
     render() {
         let userArray = this.props.usersProps.users.map((user, index) => {
-            const active = user === this.props.usersProps.currentuser
-                ? "active"
-                : "";
+            const active =
+                user === this.props.usersProps.currentuser ? "active" : "";
             return (
-                <li key={index} onClick="">
+                <li key={index}>
                     <p className="">{user}</p>
                 </li>
             );

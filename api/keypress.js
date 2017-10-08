@@ -20,7 +20,7 @@ function changeState(state, player, direction) {
     }
 }
 exports.keypress = function keypress(key) {
-    let currentRoom = this.currentRoom;
+    let currentRoom = this.room;
     let username = this.username;
     let io = this.io;
     let socket = this.socket;

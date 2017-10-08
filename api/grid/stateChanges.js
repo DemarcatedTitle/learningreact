@@ -81,7 +81,6 @@ function isAlone(players) {
 exports.moveSquare = (state, player, direction) => {
     const occupied = state.occupied;
     const listCoords = state.coords;
-    //
     const playerList = listCoords.get(player);
     const newLocation = whichWay[direction](player, listCoords, occupied);
     const indexOfOccupied = occupied.indexOf(newLocation);

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 const { fromJS } = require("immutable");
 const exports = (module.exports = {});
 exports.chatMessages = function(messages) {
@@ -44,8 +43,7 @@ exports.addAllListeners = function(socket) {
         return this.setState({ grid: fromJS(grid) });
     });
     socket.on("you", you => {
-        // console.log(`you = ${you}`);
-        return this.setState({ you: parseInt(you) });
+        return this.setState({ you: parseInt(you, 10) });
     });
     socket.on("coords", coords => {
         return this.setState({ coords: fromJS(coords) });
@@ -57,8 +55,6 @@ exports.addAllListeners = function(socket) {
         return this.setState({ outcome: outcome });
     });
     socket.on("gameHistory", gameHistory => {
-        console.log(gameHistory);
-        console.log("Socket game history");
         return this.setState({
             gameHistory: gameHistory
         });
@@ -84,6 +80,7 @@ exports.addAllListeners = function(socket) {
         socket.close();
         return this.setState({ loggedIn: false });
     });
+    console.log(socket.listeners("error"));
 };
 exports.logger = function() {
     console.log(this);

@@ -34,7 +34,6 @@ class WalkGrid extends React.PureComponent {
             return (
                 <div
                     tabIndex="0"
-                    onClick={this.handleClick}
                     onKeyPress={this.handleKeyPress}
                     className="grid"
                 >
