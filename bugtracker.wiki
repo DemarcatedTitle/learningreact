@@ -7,6 +7,7 @@
     * [X] keypress and probably other socket events are firing twice
 = joint =
     * [ ] Highlighted room isn't working right
+        * [ ] Might be a problem with server being turned off/on inconsistently
     * [ ] Movement affects both players views
     * [X] current room is removed when a different user changes rooms
         * [X] This might take some figuring out in terms of game rules and logic
