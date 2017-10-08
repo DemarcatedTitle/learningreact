@@ -1,5 +1,6 @@
-// eslint-disable-next-line
+/* eslint-disable no-unused-vars */
 import React from "react";
+import MobileControls from "./MobileControls.js";
 // const { List, fromJS } = require("immutable");
 /* eslint-disable no-console */
 //Plans:
@@ -17,6 +18,24 @@ class WalkGrid extends React.PureComponent {
         this.handleKeyPress = this.handleKeyPress.bind(this);
     }
     componentWillMount() {}
+    componentDidUpdate() {
+        if (
+            this.props.grid !== null &&
+            this.props.coords !== null &&
+            this.props.occupied !== null &&
+            typeof this.props.you === "number" &&
+            isNaN(this.props.you) === false
+        ) {
+            console.log(document);
+            let grid = document.getElementsByClassName("outcome")[0];
+            console.log(grid);
+            if (typeof grid !== "undefined") {
+                grid.scrollIntoView(true);
+                console.log("scroll");
+            }
+        }
+        console.log("did mount");
+    }
     componentWillUnmount() {}
     handleClick() {}
     handleKeyPress(event) {
@@ -54,6 +73,7 @@ class WalkGrid extends React.PureComponent {
                         coords={coords}
                         you={this.props.you}
                     />
+                    <MobileControls />
                 </div>
             );
         } else {

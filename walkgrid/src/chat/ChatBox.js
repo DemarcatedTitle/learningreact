@@ -15,7 +15,7 @@ class ChatBox extends React.PureComponent {
         event.preventDefault();
         this.props.socket.emit("chat message", this.state.message);
         this.setState({ message: "" });
-        document.getElementById("endOfMessages").scrollIntoView();
+        // document.getElementById("endOfMessages").scrollIntoView();
     }
     handleChange(event) {
         this.setState({ message: event.target.value });
@@ -45,19 +45,17 @@ class ChatBox extends React.PureComponent {
                                 {moment(message.date).format(
                                     "MM/DD/YY hh:mm a"
                                 )}
-                            </p>
-                            {" "}
-                            <p className="username">
-                                {message.username}
-                            </p>
+                            </p>{" "}
+                            <p className="username">{message.username}</p>
                             <p />
+                        </div>{" "}
+                        <div className="message">
+                            <p>{message.message}</p>
                         </div>
-                        {" "}
-                        <div className="message"><p>{message.message}</p></div>
                     </li>
                 );
             });
-        let classes = `columnContainer ${this.props.className}`;
+        let classes = `columnContainer ${this.props.className} chatbox`;
         return (
             <div className={classes}>
                 <Rooms roomsProps={this.props.roomsProps} />

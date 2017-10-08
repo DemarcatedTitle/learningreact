@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-console */
 import React, { Component } from "react";
 import Routes from "../Routes.js";
 // const { List, fromJS } = require("immutable");

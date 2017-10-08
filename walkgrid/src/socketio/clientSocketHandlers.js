@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const { fromJS } = require("immutable");
 const exports = (module.exports = {});
 exports.chatMessages = function(messages) {
