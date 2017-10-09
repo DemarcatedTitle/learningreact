@@ -21,7 +21,8 @@ class ChatBox extends React.PureComponent {
         this.setState({ message: event.target.value });
     }
     componentDidUpdate() {
-        document.getElementById("endOfMessages").scrollIntoView();
+        let messages = document.getElementById("messages");
+        messages.scrollTop = messages.scrollHeight;
     }
     componentWillUnmount() {}
     render() {
