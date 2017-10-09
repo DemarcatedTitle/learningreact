@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-console */
 /* eslint-disable no-useless-constructor */
 import React from "react";
 import WalkGrid from "./walkGrid.js";
@@ -17,7 +18,20 @@ class GridChat extends React.PureComponent {
     toggleChat() {
         this.setState({ chatHidden: !this.state.chatHidden });
     }
-    componentDidUpdate() {}
+    componentDidMount() {
+        if (
+            this.props.gridProps.grid !== null &&
+            this.props.gridProps.coords !== null &&
+            this.props.gridProps.occupied !== null &&
+            typeof this.props.gridProps.you === "number" &&
+            isNaN(this.props.gridProps.you) === false
+        ) {
+            // this.toggleChat();
+            document.scrollIntoView(
+                document.getElementsByClassName("outcome")[0]
+            );
+        }
+    }
     componentWillUnmount() {}
     render() {
         let hidden;

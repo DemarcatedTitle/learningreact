@@ -36,6 +36,7 @@
 .outcome {
     background-color: yellow;
     text-align: center;
+    margin: 0;
 
 }
 .outOfBounds {

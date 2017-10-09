@@ -26,15 +26,11 @@ class WalkGrid extends React.PureComponent {
             typeof this.props.you === "number" &&
             isNaN(this.props.you) === false
         ) {
-            console.log(document);
             let grid = document.getElementsByClassName("outcome")[0];
-            console.log(grid);
             if (typeof grid !== "undefined") {
                 grid.scrollIntoView(true);
-                console.log("scroll");
             }
         }
-        console.log("did mount");
     }
     componentWillUnmount() {}
     handleClick() {}
@@ -73,7 +69,9 @@ class WalkGrid extends React.PureComponent {
                         coords={coords}
                         you={this.props.you}
                     />
-                    <MobileControls />
+                    <MobileControls
+                        handleKeyPress={this.props.handleKeyPress}
+                    />
                 </div>
             );
         } else {
@@ -131,7 +129,6 @@ class Space extends React.PureComponent {
 // eslint-disable-next-line
 class Rows extends React.PureComponent {
     render() {
-        console.log(this.props.you);
         const coords = this.props.coords.get(this.props.you);
         const yourPlayer = this.props.you;
         const opponent = yourPlayer === 1 ? 0 : 1;

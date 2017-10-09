@@ -104,6 +104,7 @@ class SocketContainer extends Component {
     }
     handleKeyPress(event) {
         // Some kind of tick might make it feel less janky
+
         if (isKeydownAvailable) {
             if (event.key === "ArrowUp") {
                 socket.emit("keypress", event.key);

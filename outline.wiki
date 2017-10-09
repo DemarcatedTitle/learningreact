@@ -34,4 +34,11 @@
     14. [ ] A production version
 
 = What I was doing last =
+    10. [ ] I want everything to be responsive and usable on mobile devices
+        1. [ ] On desktop resolutions 
+            1. [ ] The squares should be a pleasant enough
+                   size so that everything is visible and proportionate 
+        2. [ ] On mobile resolutions
+            1. [ ] Everything should still be present and usable
+                1. [ ] But displaying the grid/chat should be toggled
 Looking at cleaning up the ui
