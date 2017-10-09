@@ -27,15 +27,27 @@ class GameHistory extends React.PureComponent {
                         ) {
                             return (
                                 <li className="history" key={index}>
-                                    <p className="player">
-                                        {moment(match.date).format(
-                                            "MM/DD/YY hh:mm a"
-                                        )}
-                                    </p>
-                                    <p className="player">{match.players[0]}</p>
-                                    <p>vs</p>
-                                    <p className="player">{match.players[1]}</p>
-                                    <p className="outcome">{match.outcome}</p>
+                                    <div className="historyThird">
+                                        <p className="player">
+                                            {moment(match.date).format(
+                                                "MM/DD/YY hh:mm a"
+                                            )}
+                                        </p>
+                                    </div>
+                                    <div className="historyThird">
+                                        <p className="player">
+                                            {match.players[0]}
+                                        </p>
+                                        <p>vs</p>
+                                        <p className="player">
+                                            {match.players[1]}
+                                        </p>
+                                    </div>
+                                    <div className="historyThird">
+                                        <p className="outcome">
+                                            {match.outcome}
+                                        </p>
+                                    </div>
                                 </li>
                             );
                         })}

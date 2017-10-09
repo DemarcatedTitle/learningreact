@@ -37,13 +37,11 @@ class Routes extends Component {
                 <div>
                     <ul className="App-header">
                         <li>
-                            this.props.loggedIn:
-                            {" "}
-                            {this.props.loggedIn.toString()}
-                            {" "}
+                            <Link to="/">Home</Link>
                         </li>
-                        <li><Link to="/">Home</Link></li>
-                        <li><Link to="/history">History</Link></li>
+                        <li>
+                            <Link to="/history">History</Link>
+                        </li>
                         <LoggedIn
                             logout={this.props.logout}
                             loggedIn={this.props.loggedIn}

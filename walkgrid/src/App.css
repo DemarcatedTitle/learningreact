@@ -8,7 +8,7 @@
 }
 
 .App-intro {
-  font-size: large;
+  /* font-size: large; */
 }
 ul { 
     margin: 0;
@@ -234,7 +234,11 @@ text-shadow: 1px 1px 2px white, 0 0 1em white, 0 0 0.2em white;
 .player {
     margin-left: 5px;
     margin-right: 5px;
-    border: 1px solid grey;
+    /* border: 1px solid grey; */
+}
+.button {
+    border: 0;
+    padding: 0;
 }
 
 @keyframes App-logo-spin {
@@ -243,6 +247,23 @@ text-shadow: 1px 1px 2px white, 0 0 1em white, 0 0 0.2em white;
 }
 .MobileControls {
     display: none;
+}
+a:visited {
+    color: orange;
+}
+.history {
+    border-bottom: 1px solid black;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+.historyThird:nth-child(1n){
+    grid-column: 1;
+}
+.historyThird:nth-child(2n){
+    grid-column: 2;
+}
+.historyThird:nth-child(3n){
+    grid-column: 3;
 }
 
 @media screen

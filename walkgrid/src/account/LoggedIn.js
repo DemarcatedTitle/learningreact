@@ -28,12 +28,16 @@ class LoggedIn extends React.PureComponent {
     }
     render() {
         if (this.props.loggedIn === false) {
-            return <li><Link to="/login">Log in</Link></li>;
+            return (
+                <li>
+                    <Link to="/login">Log in</Link>
+                </li>
+            );
         } else {
             return (
                 <li>
                     <button onClick={this.props.logout}>
-                        Sign out of {localStorage.getItem("username")}
+                        <span className="button_inner">Sign Out</span>
                     </button>
                 </li>
             );
