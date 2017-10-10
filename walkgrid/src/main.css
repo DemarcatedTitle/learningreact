@@ -42,3 +42,44 @@
 .outOfBounds {
     background-color: red;
 }
+@media screen
+  and (max-device-width: 500px)
+   {
+    body {
+        background-color: white;
+    }
+    .GridChat {
+        flex-direction: column;
+    }
+    .hidden {
+        display: none;
+    }
+    .MobileControls {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        align-items: stretch;
+    }
+    .MobileControls :nth-child(3n){
+        text-align: right;
+    }
+    .MobileControls :nth-child(2n){
+        text-align: center;
+    }
+    .MobileButton {
+        /* flex-grow: 1; */
+        /* background-color: yellow; */
+        font-size: xx-large;
+        border: 1px solid black;
+    }
+    .up {
+        position: absolute;
+        top: -400px;
+    }
+    .griddetected {
+        height: 2em;
+    }
+    .outcome {
+        text-align: right;
+    }
+
+}

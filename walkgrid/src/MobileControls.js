@@ -13,8 +13,9 @@ class MobileControls extends React.PureComponent {
                     handleKeyPress={this.props.handleKeyPress}
                     direction={"left"}
                 />
-                <div className="MobileButton">
+                <div className="MobileControls">
                     <MobileButton
+                        className="up"
                         handleKeyPress={this.props.handleKeyPress}
                         direction={"up"}
                     />
@@ -69,8 +70,9 @@ class MobileButton extends React.PureComponent {
         console.log(this.props.direction);
     }
     render() {
+        let classes = `${this.props.className} MobileButton`;
         return (
-            <div onTouchStart={this.onTouchStart} className="MobileButton">
+            <div onTouchStart={this.onTouchStart} className={classes}>
                 <div>{arrows[this.props.direction]}</div>
             </div>
         );

@@ -21,24 +21,18 @@
     9. [X] Leaving a game needs handling
         1. [X] Should allow reconnect if no other games are joined
         2. [X] Should forfeit if another game joined
-    10. [ ] I want everything to be responsive and usable on mobile devices
-        1. [ ] On desktop resolutions 
-            1. [ ] The squares should be a pleasant enough
+    10. [O] I want everything to be responsive and usable on mobile devices
+        1. [X] On desktop resolutions 
+            1. [X] The squares should be a pleasant enough
                    size so that everything is visible and proportionate 
-        2. [ ] On mobile resolutions
-            1. [ ] Everything should still be present and usable
-                1. [ ] But displaying the grid/chat should be toggled
+        2. [o] On mobile resolutions
+            1. [o] Everything should still be present and usable
+                1. [X] But displaying the grid/chat should be toggled
+                2. [ ] Buttons need work
     11. [X] Establish Win and Lose Conditions
     12. [X] Make a game history page
     13. [ ] Make a tutorial
     14. [ ] A production version
 
 = What I was doing last =
-    10. [ ] I want everything to be responsive and usable on mobile devices
-        1. [ ] On desktop resolutions 
-            1. [ ] The squares should be a pleasant enough
-                   size so that everything is visible and proportionate 
-        2. [ ] On mobile resolutions
-            1. [ ] Everything should still be present and usable
-                1. [ ] But displaying the grid/chat should be toggled
 Looking at cleaning up the ui
