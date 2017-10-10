@@ -30,11 +30,14 @@ function forfeitPrevious(username, socket, currentRoom) {
             winnerMap.delete(username);
             const winner = winnerMap.keys().next().value;
             outcome = `${username} has forfeited, ${winner} is the winner!`;
-            gameHistory.push({
-                date: new Date(),
-                players: Array.from(prevPlayers.keys()),
-                outcome: outcome
-            });
+            let players = Array.from(prevPlayers.keys());
+            if (players.length > 1) {
+                gameHistory.push({
+                    date: new Date(),
+                    players: players,
+                    outcome: outcome
+                });
+            }
             games.get(previousRoom).outcome = outcome;
         } else {
             outcome = games.get(previousRoom).outcome;
