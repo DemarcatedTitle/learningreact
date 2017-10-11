@@ -345,6 +345,44 @@ exports.io = function(listener, secret, users) {
                         io,
                         socket
                     };
+                    function recursiveSecondsTimer(cb, seconds) {
+                        if (seconds > 0) {
+                            console.log(seconds);
+                            cb(seconds);
+                            return setTimeout(
+                                recursiveSecondsTimer,
+                                1000,
+                                cb,
+                                seconds - 1
+                            );
+                        } else {
+                            io.to(currentRoom).emit("outcome", "Time's up!");
+                        }
+                    }
+                    function timerEmit(seconds) {
+                        // Set state.outcome = player with most squares or draw
+                        let state = games.get(currentRoom);
+                        console.log(state.coords.get(0));
+                        console.log(state.coords.get(1));
+                        function winning(coords, players) {
+                            if (coords.get(0).size === coords.get(1).size) {
+                                return "draw";
+                            } else if (
+                                coords.get(0).size > coords.get(1).size
+                            ) {
+                                return 0;
+                            } else {
+                                return 1;
+                            }
+                        }
+                        console.log(
+                            `${winning(state.coords, state.players)}is winning`
+                        );
+
+                        io
+                            .to(currentRoom)
+                            .emit("outcome", `${seconds} seconds left`);
+                    }
                     if (
                         typeof games.get(room).players.get(decoded.username) ===
                         "number"
@@ -357,6 +395,8 @@ exports.io = function(listener, secret, users) {
                             undefined &&
                         games.get(room).players.size < 2
                     ) {
+                        // This seems like the ideal spot to place the timer
+                        recursiveSecondsTimer(timerEmit, 5);
                         socket.removeAllListeners("keypress");
                         socket.on("keypress", keypress.bind(context));
                     } else if (
@@ -375,6 +415,7 @@ exports.io = function(listener, secret, users) {
             console.log(gameHistory);
             io.to(socket.id).emit("gameHistory", gameHistory);
         });
+        console.log("connection");
     });
     const repl = require("repl");
     repl.start("> ").context.io = io;
