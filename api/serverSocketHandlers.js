@@ -346,8 +346,10 @@ exports.io = function(listener, secret, users) {
                         socket
                     };
                     function recursiveSecondsTimer(cb, seconds) {
-                        if (seconds > 0) {
+                        let state = games.get(currentRoom);
+                        if (seconds > 0 && state.outcome === undefined) {
                             console.log(seconds);
+                            console.log(state.timer);
                             cb(seconds);
                             return setTimeout(
                                 recursiveSecondsTimer,
@@ -355,33 +357,56 @@ exports.io = function(listener, secret, users) {
                                 cb,
                                 seconds - 1
                             );
-                        } else {
+                        } else if (state.outcome === undefined) {
+                            function winning(coords, players) {
+                                if (coords.get(0).size === coords.get(1).size) {
+                                    return "draw";
+                                } else if (
+                                    coords.get(0).size > coords.get(1).size
+                                ) {
+                                    return 0;
+                                } else {
+                                    return 1;
+                                }
+                            }
+                            function whichPlayer(number, players) {
+                                const playerArr = Array.from(players);
+                                playerArr.map(function(
+                                    currentValue,
+                                    index,
+                                    array
+                                ) {
+                                    if (currentValue[1] === number) {
+                                        const winner = currentValue[0];
+                                        const outcome = `${winner} is the winner`;
+                                        const playersHistory = Array.from(
+                                            players.keys()
+                                        );
+                                        state.outcome = outcome;
+                                        gameHistory.push({
+                                            date: new Date(),
+                                            players: playersHistory,
+                                            outcome: outcome
+                                        });
+                                        console.log(state.outcome);
+                                    }
+                                });
+                            }
+                            whichPlayer(
+                                winning(state.coords, state.players),
+                                state.players
+                            );
                             io.to(currentRoom).emit("outcome", "Time's up!");
+                            function delayedOutcome() {
+                                io
+                                    .to(currentRoom)
+                                    .emit("outcome", state.outcome);
+                            }
+                            setTimeout(delayedOutcome, 1000);
                         }
                     }
                     function timerEmit(seconds) {
-                        // Set state.outcome = player with most squares or draw
-                        let state = games.get(currentRoom);
-                        console.log(state.coords.get(0));
-                        console.log(state.coords.get(1));
-                        function winning(coords, players) {
-                            if (coords.get(0).size === coords.get(1).size) {
-                                return "draw";
-                            } else if (
-                                coords.get(0).size > coords.get(1).size
-                            ) {
-                                return 0;
-                            } else {
-                                return 1;
-                            }
-                        }
-                        console.log(
-                            `${winning(state.coords, state.players)}is winning`
-                        );
-
-                        io
-                            .to(currentRoom)
-                            .emit("outcome", `${seconds} seconds left`);
+                        io.to(currentRoom).emit("outcome", `${seconds}`);
                     }
                     if (
                         typeof games.get(room).players.get(decoded.username) ===
@@ -396,7 +421,7 @@ exports.io = function(listener, secret, users) {
                         games.get(room).players.size < 2
                     ) {
                         // This seems like the ideal spot to place the timer
-                        recursiveSecondsTimer(timerEmit, 5);
+                        recursiveSecondsTimer(timerEmit, 60);
                         socket.removeAllListeners("keypress");
                         socket.on("keypress", keypress.bind(context));
                     } else if (

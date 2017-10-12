@@ -35,4 +35,12 @@
     14. [ ] A production version
 
 = What I was doing last =
-Looking at cleaning up the ui
+
+I think I need something that acts as a better driving force for winning and
+losing. My idea is just a timer and whoever gets the most squares in the time
+limit wins, or whoever crashes into something loses. 
+
+The timer is pretty much set up. It just needs some events to make happen. Like
+a function that does an io.emit:"Time's up!" (wait a moment) io.emit:"X is the
+winner" and blocks further actions in game
+
