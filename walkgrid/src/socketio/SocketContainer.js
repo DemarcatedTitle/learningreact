@@ -15,7 +15,7 @@ class SocketContainer extends Component {
             localStorage.getItem("idtoken") !== null ? true : false;
         let listeners = false;
         if (loggedIn) {
-            socket = io(`${location.host}`, {
+            socket = io(`${location.hostname}:8000`, {
                 query: {
                     token: localStorage.getItem("idtoken")
                 }
@@ -67,7 +67,7 @@ class SocketContainer extends Component {
                     window.localStorage.setItem("idtoken", data.idtoken);
                     window.localStorage.setItem("username", data.username);
                     console.log("located in fetch socket =");
-                    socket = io(`${location.host}`, {
+                    socket = io(`${location.hostname}:8000`, {
                         query: {
                             token: localStorage.getItem("idtoken")
                         }

@@ -1,4 +1,7 @@
 = back-end =
+    * [ ] Something causes a function in statechanges.js to be called, while
+          there is no playerList, breaking the server
+    * [ ] There seem to be miscellaneous bugs regarding how I set up player list size
     * [X] You can use duplicate game names
     * [X] Refreshing a page breaks being able to control your square
     * [X] Joining a game and moving around still moves you around in your old game
