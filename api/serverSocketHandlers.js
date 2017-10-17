@@ -20,6 +20,11 @@ function chatMessageEmission(room, chatlogs) {
         logs: chatlogs.get(room)
     });
 }
+function getCurrentRoom(socketid, activeUsersMap, chattersMap) {
+    const username = chattersMap.get(socketid);
+    const currentRoom = activeUsersMap.get(username);
+    return currentRoom;
+}
 function forfeitPrevious(username, socket, currentRoom) {
     if (activePlayers.has(username)) {
         let previousRoom = activePlayers.get(username);
@@ -253,6 +258,43 @@ exports.io = function(listener, secret, users) {
                 socket.emit("error", "Something went wrong");
             } else {
                 socket.on("chat message", function(message) {
+                    function chatCommands(command) {
+                        let reply;
+                        const rooms = ["Tutorial"];
+                        if (command === "/tutorial") {
+                            console.log(rooms);
+                            forfeitPrevious(
+                                decoded.username,
+                                socket,
+                                getCurrentRoom(
+                                    socket.id,
+                                    activePlayers,
+                                    chatters
+                                )
+                            );
+                            io.to(socket.id).emit(
+                                "rooms",
+                                JSON.stringify({
+                                    rooms: rooms,
+                                    currentRoom: "Tutorial"
+                                })
+                            );
+
+                            reply = JSON.stringify({
+                                room: "tutorial",
+                                logs: [
+                                    {
+                                        date: new Date(),
+                                        message:
+                                            "You just asked for a tutorial",
+                                        username: "Server"
+                                    }
+                                ]
+                            });
+                            io.to(socket.id).emit("chat message", reply);
+                        }
+                        return reply;
+                    }
                     if (chatlogs.get(currentRoom)) {
                         console.log(`${chatters.get(socket.id)} just spoke`);
                         io.in(currentRoom).clients((error, clients) => {
@@ -278,6 +320,7 @@ exports.io = function(listener, secret, users) {
                                 chatMessageEmission(currentRoom, chatlogs)
                             );
                     }
+                    chatCommands(message);
                 });
             }
         });
