@@ -25,7 +25,7 @@ function getCurrentRoom(socketid, activeUsersMap, chattersMap) {
     const currentRoom = activeUsersMap.get(username);
     return currentRoom;
 }
-function forfeitPrevious(username, socket, currentRoom) {
+function forfeitPrevious(username, socket, currentRoom, reason) {
     if (activePlayers.has(username)) {
         let previousRoom = activePlayers.get(username);
         let outcome;
@@ -53,12 +53,23 @@ function forfeitPrevious(username, socket, currentRoom) {
             if (error) throw error;
             if (clients.length === 0) {
                 rooms.delete(previousRoom);
-                io.emit(
+            }
+            if (reason === "tutorial") {
+                socket.broadcast.emit(
                     "rooms",
                     JSON.stringify({
                         rooms: Array.from(rooms.keys())
                     })
                 );
+            } else {
+                if (clients.length === 0) {
+                    io.emit(
+                        "rooms",
+                        JSON.stringify({
+                            rooms: Array.from(rooms.keys())
+                        })
+                    );
+                }
             }
         });
     }
@@ -270,7 +281,8 @@ exports.io = function(listener, secret, users) {
                                     socket.id,
                                     activePlayers,
                                     chatters
-                                )
+                                ),
+                                "tutorial"
                             );
                             io.to(socket.id).emit(
                                 "rooms",
