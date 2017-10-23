@@ -66,18 +66,111 @@ exports.chatmessage = function(message) {
                             currentRoom: "Tutorial"
                         })
                     );
+                    socket.join(socket.id, () => {});
+                    socket.leave("/", () => {});
+                    const state = gameInit();
+                    games.set(socket.id, state);
+                    state.players = new Map([[decoded.username, 0]]);
+                    socket.removeAllListeners("keypress");
 
+                    function tutorialgameUpdates(
+                        socket,
+                        state,
+                        username,
+                        room
+                    ) {
+                        io.in(room).emit("grid", state.grid);
+                        io.in(room).emit("coords", state.coords);
+                        io.in(room).emit("occupied", state.occupied);
+                        if (games.get(room).players.size === 1) {
+                            io.in(room).emit("outcome", "Waiting");
+                        } else {
+                            io.in(room).emit("outcome", "Game In Progress");
+                        }
+                        // The line below returns the "you" player number
+                        io
+                            .to(socket.id)
+                            .emit("you", games.get(room).players.get(username));
+                    }
+                    tutorialgameUpdates(
+                        socket,
+                        state,
+                        decoded.username,
+                        socket.id
+                    );
+                    let context = {
+                        room: socket.id,
+                        username: decoded.username,
+                        io,
+                        socket
+                    };
+                    socket.on("keypress", keypress.bind(context));
                     timedMessages(
                         "Tutorial",
                         [
                             "Initializing tutorial...",
-                            "Testing 1",
-                            "testing 2",
-                            "testing 3"
+                            "This is a two player game.",
+                            "Controls are currently WSAD to move.",
+                            "Click the grid to target it and move instead of type.",
+                            "In the pre-game lobby you can move however you want",
+                            "Against other players however...",
+                            "Colliding into either the squares you occupy or the squares they occupy results in a loss for you.",
+                            "Should no one make that mistake, the player with the most squares wins the match"
                         ],
-                        1000,
+                        1500,
                         logs
                     );
+                    function greedyBot() {
+                        if (true) {
+                            let tempState = gameInit();
+                            games
+                                .get(socket.id)
+                                .players.set(decoded.username, 1);
+                            tempState.players = new Map([
+                                [decoded.username, 0],
+                                ["greedyBot", 1]
+                            ]);
+                            games.set(socket.id, tempState);
+                            gameUpdates(
+                                socket,
+                                tempState,
+                                decoded.username,
+                                socket.id
+                            );
+                        } else {
+                        }
+                        // io.to(socket.id).emit(
+                        //     "rooms",
+                        //     JSON.stringify({
+                        //         rooms: Array.from(rooms.keys()),
+                        //         currentRoom: room
+                        //     })
+                        // );
+                        io.in(socket.id).clients((error, clients) => {
+                            if (error) throw error;
+                            io.to(socket.id).emit(
+                                "users",
+                                JSON.stringify({
+                                    users: ["greedyBot", decoded.username],
+                                    currentUser: decoded.username
+                                })
+                            );
+                        });
+                        // io.to(socket.id).emit(
+                        //     "chat message",
+                        //     JSON.stringify({
+                        //         room: room,
+                        //         logs: chatlogs.get(room)
+                        //     })
+                        // );
+                        // const state = gameInit();
+                        // state.players = new Map([[decoded.username, 0]]);
+                        // games.set(currentRoom, state);
+
+                        let state = games.get(socket.id);
+                        // activePlayers.set(decoded.username, socket.id);
+                    }
+                    greedyBot();
                 }
                 return reply;
             }
