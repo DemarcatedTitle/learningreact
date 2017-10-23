@@ -17,12 +17,32 @@ exports.chatmessage = function(message) {
         gameUpdates,
         activePlayers,
         gameHistory,
-        keypress
+        keypress,
+        appendMessage
     } = this;
     JWT.verify(userToken, secret, function(err, decoded) {
         if (err) {
             socket.emit("error", "Something went wrong");
         } else {
+            // Send multiple messages with time in between each message
+            // timedMessages mutates the log it is passed
+            function timedMessages(room, messageArray, ms, logs) {
+                messageArray.forEach(function(message, index, array) {
+                    setTimeout(function() {
+                        logs = appendMessage(
+                            logs,
+                            new Date(),
+                            message,
+                            "Server"
+                        );
+                        const reply = JSON.stringify({
+                            room: room,
+                            logs: logs
+                        });
+                        io.to(socket.id).emit("chat message", reply);
+                    }, ms * (index + 1));
+                });
+            }
             const currentRoom = getCurrentRoom(
                 socket.id,
                 activePlayers,
@@ -32,7 +52,7 @@ exports.chatmessage = function(message) {
                 let reply;
                 const rooms = ["Tutorial"];
                 if (command === "/tutorial") {
-                    console.log(rooms);
+                    let logs = [];
                     forfeitPrevious(
                         decoded.username,
                         socket,
@@ -47,17 +67,17 @@ exports.chatmessage = function(message) {
                         })
                     );
 
-                    reply = JSON.stringify({
-                        room: "tutorial",
-                        logs: [
-                            {
-                                date: new Date(),
-                                message: "You just asked for a tutorial",
-                                username: "Server"
-                            }
-                        ]
-                    });
-                    io.to(socket.id).emit("chat message", reply);
+                    timedMessages(
+                        "Tutorial",
+                        [
+                            "Initializing tutorial...",
+                            "Testing 1",
+                            "testing 2",
+                            "testing 3"
+                        ],
+                        1000,
+                        logs
+                    );
                 }
                 return reply;
             }
