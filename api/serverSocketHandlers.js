@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 /* eslint-disable indent */
-const { List, fromJS } = require("immutable");
+// const { List, fromJS } = require("immutable");
 const keypress = require("./keypress.js").keypress;
 const gameInit = require("./gameInit.js").gameInit;
-const moveSquare = require("./grid/stateChanges.js").moveSquare;
+// const moveSquare = require("./grid/stateChanges.js").moveSquare;
 const join = require("./join").join;
 const chatmessage = require("./chatmessage").chatmessage;
 const newgame = require("./newgame").newgame;
@@ -17,6 +17,7 @@ const {
 } = require("./gamestate.js");
 let io;
 const JWT = require("jsonwebtoken");
+const appendMessage = require("./appendMessage");
 function chatMessageEmission(room, chatlogs) {
     return JSON.stringify({
         room: room,
@@ -132,6 +133,7 @@ exports.io = function(listener, secret, users) {
             });
         });
         const socketContext = {
+            appendMessage: appendMessage,
             chatMessageEmission: chatMessageEmission,
             getCurrentRoom: getCurrentRoom,
             JWT: JWT,
