@@ -35,12 +35,17 @@ exports.newgame = function(room) {
                 forfeitPrevious(decoded.username, socket, currentRoom);
                 rooms.set(room, io.of(room));
                 chatlogs.set(currentRoom, []);
-                let grid = [];
                 const state = gameInit();
                 state.players = new Map([[decoded.username, 0]]);
                 games.set(currentRoom, state);
                 socket.join(room, () => {
-                    socket.broadcast.emit(
+                    // socket.broadcast.emit(
+                    //     "rooms",
+                    //     JSON.stringify({
+                    //         rooms: Array.from(rooms.keys())
+                    //     })
+                    // );
+                    io.to("/").emit(
                         "rooms",
                         JSON.stringify({
                             rooms: Array.from(rooms.keys())
@@ -82,17 +87,22 @@ exports.newgame = function(room) {
                 forfeitPrevious(decoded.username, socket, numberedRoom);
                 rooms.set(numberedRoom, io.of(numberedRoom));
                 chatlogs.set(numberedRoom, []);
-                let grid = [];
                 const state = gameInit();
                 state.players = new Map([[decoded.username, 0]]);
                 games.set(numberedRoom, state);
                 socket.join(numberedRoom, () => {
-                    socket.broadcast.emit(
+                    io.to("/").emit(
                         "rooms",
                         JSON.stringify({
                             rooms: Array.from(rooms.keys())
                         })
                     );
+                    // socket.broadcast.emit(
+                    //     "rooms",
+                    //     JSON.stringify({
+                    //         rooms: Array.from(rooms.keys())
+                    //     })
+                    // );
                     io.in(numberedRoom).clients((error, clients) => {
                         if (error) throw error;
                         io.to(socket.id).emit(

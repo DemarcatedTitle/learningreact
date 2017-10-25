@@ -1,3 +1,5 @@
+const returnDistance = require("./utilities").returnDistance;
+const stepsToTake = require("./utilities").stepsToTake;
 exports.chatmessage = function(message) {
     const {
         chatMessageEmission,
@@ -120,7 +122,7 @@ exports.chatmessage = function(message) {
                         1500,
                         logs
                     );
-                    function greedyBot() {
+                    function greedyBot(intDifficulty) {
                         if (true) {
                             let tempState = gameInit();
                             games
@@ -139,13 +141,6 @@ exports.chatmessage = function(message) {
                             );
                         } else {
                         }
-                        // io.to(socket.id).emit(
-                        //     "rooms",
-                        //     JSON.stringify({
-                        //         rooms: Array.from(rooms.keys()),
-                        //         currentRoom: room
-                        //     })
-                        // );
                         io.in(socket.id).clients((error, clients) => {
                             if (error) throw error;
                             io.to(socket.id).emit(
@@ -156,21 +151,135 @@ exports.chatmessage = function(message) {
                                 })
                             );
                         });
-                        // io.to(socket.id).emit(
-                        //     "chat message",
-                        //     JSON.stringify({
-                        //         room: room,
-                        //         logs: chatlogs.get(room)
-                        //     })
-                        // );
-                        // const state = gameInit();
-                        // state.players = new Map([[decoded.username, 0]]);
-                        // games.set(currentRoom, state);
-
+                        // setTimeout(function() {
+                        //     const context = {
+                        //         room: socket.id,
+                        //         username: "greedyBot",
+                        //         io,
+                        //         socket
+                        //     };
+                        //     keypress.bind(context)("w");
+                        // }, 3000);
                         let state = games.get(socket.id);
-                        // activePlayers.set(decoded.username, socket.id);
+                        console.log(state.occupied.get(0));
+                        console.log(state.coords.getIn([0, 0]));
+                        console.log(
+                            stepsToTake(
+                                state.coords.getIn([0, 0]),
+                                state.occupied.get(0)
+                            )
+                        );
+                        const steps = stepsToTake(
+                            state.coords.getIn([0, 0]),
+                            state.occupied.get(0)
+                        );
+                        function delay(t) {
+                            return new Promise(function(resolve, reject) {
+                                if (typeof t === "number") {
+                                    setTimeout(resolve, t);
+                                } else {
+                                    reject("delay t arg is not a number");
+                                }
+                            });
+                        }
+                        function walkY() {
+                            return new Promise((resolve, reject) => {
+                                const context = {
+                                    room: socket.id,
+                                    username: "greedyBot",
+                                    io,
+                                    socket
+                                };
+                                for (var i = 0; i < Math.abs(steps[0]); i++) {
+                                    if (i < Math.abs(steps[0])) {
+                                        setTimeout(
+                                            function(resolve) {
+                                                i = parseInt(this);
+                                                if (steps[0] < 0) {
+                                                    keypress.bind(context)("s");
+                                                } else {
+                                                    keypress.bind(context)("w");
+                                                }
+                                                if (
+                                                    i ==
+                                                    Math.abs(steps[0]) - 1
+                                                ) {
+                                                    resolve("walkY");
+                                                }
+                                            }.bind(i),
+                                            i * intDifficulty,
+                                            resolve
+                                        );
+                                    }
+                                }
+                            });
+                        }
+                        function walkX() {
+                            return new Promise(resolve => {
+                                const context = {
+                                    room: socket.id,
+                                    username: "greedyBot",
+                                    io,
+                                    socket
+                                };
+                                for (var i = 0; i < Math.abs(steps[1]); i++) {
+                                    setTimeout(
+                                        function(resolve) {
+                                            i = parseInt(this);
+                                            if (steps[1] < 0) {
+                                                keypress.bind(context)("d");
+                                            } else {
+                                                keypress.bind(context)("a");
+                                            }
+                                            if (i === Math.abs(steps[1]) - 1) {
+                                                resolve("walkX");
+                                            }
+                                        }.bind(i),
+                                        i * intDifficulty,
+                                        resolve
+                                    );
+                                }
+                            });
+                        }
+                        function closestSquare(currentLocation) {
+                            return state.occupied.sort(function(a, b) {
+                                if (
+                                    returnDistance(currentLocation, a) >
+                                    returnDistance(currentLocation, b)
+                                ) {
+                                    return 1;
+                                }
+                                if (
+                                    returnDistance(currentLocation, a) <
+                                    returnDistance(currentLocation, b)
+                                ) {
+                                    return -1;
+                                }
+                                return 0;
+                            });
+                        }
+                        const closestArrangement = closestSquare(
+                            state.coords.getIn([0, 0])
+                        );
+                        console.log(
+                            closestArrangement.map(value =>
+                                returnDistance(
+                                    state.coords.getIn([0, 0]),
+                                    value
+                                )
+                            )
+                        );
+
+                        async function go2Square() {
+                            if (state.occupied.size > 0) {
+                                const y = await walkY();
+                                const x = await walkX();
+                                go2Square();
+                            }
+                        }
+                        go2Square();
                     }
-                    greedyBot();
+                    greedyBot(200);
                 }
                 return reply;
             }
