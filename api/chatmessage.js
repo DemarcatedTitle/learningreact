@@ -1,5 +1,7 @@
 const returnDistance = require("./utilities").returnDistance;
 const stepsToTake = require("./utilities").stepsToTake;
+const closestSquare = require("./grid/utilities/closestSquare.js");
+const directWalking = require("./directWalking.js");
 exports.chatmessage = function(message) {
     const {
         chatMessageEmission,
@@ -151,15 +153,6 @@ exports.chatmessage = function(message) {
                                 })
                             );
                         });
-                        // setTimeout(function() {
-                        //     const context = {
-                        //         room: socket.id,
-                        //         username: "greedyBot",
-                        //         io,
-                        //         socket
-                        //     };
-                        //     keypress.bind(context)("w");
-                        // }, 3000);
                         let state = games.get(socket.id);
                         console.log(state.occupied.get(0));
                         console.log(state.coords.getIn([0, 0]));
@@ -169,117 +162,37 @@ exports.chatmessage = function(message) {
                                 state.occupied.get(0)
                             )
                         );
-                        const steps = stepsToTake(
-                            state.coords.getIn([0, 0]),
-                            state.occupied.get(0)
-                        );
-                        function delay(t) {
-                            return new Promise(function(resolve, reject) {
-                                if (typeof t === "number") {
-                                    setTimeout(resolve, t);
-                                } else {
-                                    reject("delay t arg is not a number");
-                                }
-                            });
-                        }
-                        function walkY() {
-                            return new Promise((resolve, reject) => {
-                                const context = {
-                                    room: socket.id,
-                                    username: "greedyBot",
-                                    io,
-                                    socket
-                                };
-                                for (var i = 0; i < Math.abs(steps[0]); i++) {
-                                    if (i < Math.abs(steps[0])) {
-                                        setTimeout(
-                                            function(resolve) {
-                                                i = parseInt(this);
-                                                if (steps[0] < 0) {
-                                                    keypress.bind(context)("s");
-                                                } else {
-                                                    keypress.bind(context)("w");
-                                                }
-                                                if (
-                                                    i ==
-                                                    Math.abs(steps[0]) - 1
-                                                ) {
-                                                    resolve("walkY");
-                                                }
-                                            }.bind(i),
-                                            i * intDifficulty,
-                                            resolve
+                        const context = {
+                            room: socket.id,
+                            username: "greedyBot",
+                            io,
+                            socket
+                        };
+                        function continuousWalk(coord, occupied, ms, callback) {
+                            console.log(`continuousWalk coord: ${coord}`);
+                            if (occupied.size > 0) {
+                                directWalking(coord, occupied, ms, callback)
+                                    .then(data => {
+                                        return continuousWalk(
+                                            data.coords.getIn([1, 0]),
+                                            data.occupied,
+                                            ms,
+                                            callback
                                         );
-                                    }
-                                }
-                            });
-                        }
-                        function walkX() {
-                            return new Promise(resolve => {
-                                const context = {
-                                    room: socket.id,
-                                    username: "greedyBot",
-                                    io,
-                                    socket
-                                };
-                                for (var i = 0; i < Math.abs(steps[1]); i++) {
-                                    setTimeout(
-                                        function(resolve) {
-                                            i = parseInt(this);
-                                            if (steps[1] < 0) {
-                                                keypress.bind(context)("d");
-                                            } else {
-                                                keypress.bind(context)("a");
-                                            }
-                                            if (i === Math.abs(steps[1]) - 1) {
-                                                resolve("walkX");
-                                            }
-                                        }.bind(i),
-                                        i * intDifficulty,
-                                        resolve
-                                    );
-                                }
-                            });
-                        }
-                        function closestSquare(currentLocation) {
-                            return state.occupied.sort(function(a, b) {
-                                if (
-                                    returnDistance(currentLocation, a) >
-                                    returnDistance(currentLocation, b)
-                                ) {
-                                    return 1;
-                                }
-                                if (
-                                    returnDistance(currentLocation, a) <
-                                    returnDistance(currentLocation, b)
-                                ) {
-                                    return -1;
-                                }
-                                return 0;
-                            });
-                        }
-                        const closestArrangement = closestSquare(
-                            state.coords.getIn([0, 0])
-                        );
-                        console.log(
-                            closestArrangement.map(value =>
-                                returnDistance(
-                                    state.coords.getIn([0, 0]),
-                                    value
-                                )
-                            )
-                        );
-
-                        async function go2Square() {
-                            if (state.occupied.size > 0) {
-                                const y = await walkY();
-                                const x = await walkX();
-                                go2Square();
+                                    })
+                                    .catch(reason => console.log(reason));
+                            } else {
+                                console.log("Ran out of squares to grab!");
                             }
                         }
-                        go2Square();
+                        continuousWalk(
+                            state.coords.getIn([1, 0]),
+                            state.occupied,
+                            300,
+                            keypress.bind(context)
+                        );
                     }
-                    greedyBot(200);
+                    greedyBot(2000);
                 }
                 return reply;
             }

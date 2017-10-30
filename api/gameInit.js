@@ -35,9 +35,16 @@ exports.gameInit = function gameInit() {
         occupied.push(currentSpot);
     }
     const immOccupied = fromJS(occupied);
-    let newimmOcc = immOccupied.filter(function(value) {
-        return immOccupied.indexOf(value) === immOccupied.lastIndexOf(value);
-    });
+    let newimmOcc = immOccupied
+        .filter(function(value) {
+            return (
+                immOccupied.indexOf(value) === immOccupied.lastIndexOf(value)
+            );
+        })
+        .filter(function(value, index, iter) {
+            // This should leave me with an Occupied List that doesn't contain the starting point
+            return value !== List([7, 7]);
+        });
     return {
         coords: startingPoints,
         occupied: newimmOcc,
