@@ -2,6 +2,7 @@ const returnDistance = require("./utilities").returnDistance;
 const stepsToTake = require("./utilities").stepsToTake;
 const closestSquare = require("./grid/utilities/closestSquare.js");
 const directWalking = require("./directWalking.js");
+const walkingPathfinder = require("./walkingPathfinder.js");
 exports.chatmessage = function(message) {
     const {
         chatMessageEmission,
@@ -168,9 +169,76 @@ exports.chatmessage = function(message) {
                             io,
                             socket
                         };
+                        // I need to refactor this to use walkingPathfinder
+                        // So that steps are recalculated as neccessary
+                        // Maybe it'll be something like,
+                        // find path then step, step, step ...
+                        // until at target path
+                        //
+                        //
+                        // Alternatively I can convert the path into an array of
+                        // direction:steps values and iterate through that with rec walkaxis
+
                         function continuousWalk(coord, occupied, ms, callback) {
-                            console.log(`continuousWalk coord: ${coord}`);
                             if (occupied.size > 0) {
+                                const closest = closestSquare(
+                                    state.coords.getIn([1, 0]),
+                                    state.occupied
+                                );
+                                // Get steps to closest square
+                                walkingPathfinder(
+                                    state,
+                                    1,
+                                    state.coords.getIn([1, 0]).toJS(),
+                                    closest.get(-1).toJS()
+                                ).then(function(val) {
+                                    // Create an array of steps
+                                    // if one value changes,
+                                    // track how long the other value stays the same
+                                    // new coord is the last value where it stays the same
+                                    function findDirection(start, end) {
+                                        if (start.x === end.x) {
+                                            return "y";
+                                        } else if (start.y === end.y) {
+                                            return "x";
+                                        }
+                                    }
+                                    const steppingStones = val.reduce(function(
+                                        accumulator,
+                                        currentVal,
+                                        currentIndex,
+                                        array
+                                    ) {
+                                        console.log("currentVal:");
+                                        console.log(currentVal);
+                                        if (currentIndex === 0) {
+                                            return accumulator;
+                                        }
+                                        if (
+                                            currentVal.x ===
+                                            array[currentIndex - 1].x
+                                        ) {
+                                            const newY =
+                                                currentVal.y -
+                                                array[currentIndex - 1].y;
+                                            return accumulator.concat({
+                                                y: newY
+                                            });
+                                        } else if (
+                                            currentVal.y ===
+                                            array[currentIndex - 1].y
+                                        ) {
+                                            const newX =
+                                                currentVal.x -
+                                                array[currentIndex - 1].x;
+                                            return accumulator.concat({
+                                                x: newX
+                                            });
+                                        }
+                                    },
+                                    []);
+                                    console.log(steppingStones);
+                                });
                                 directWalking(coord, occupied, ms, callback)
                                     .then(data => {
                                         return continuousWalk(
@@ -188,7 +256,7 @@ exports.chatmessage = function(message) {
                         continuousWalk(
                             state.coords.getIn([1, 0]),
                             state.occupied,
-                            300,
+                            900,
                             keypress.bind(context)
                         );
                     }
