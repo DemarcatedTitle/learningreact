@@ -186,69 +186,209 @@ exports.chatmessage = function(message) {
                                     state.occupied
                                 );
                                 // Get steps to closest square
+                                console.log(
+                                    `last in closest: ${JSON.stringify(
+                                        closest.get(-1)
+                                    )}`
+                                );
                                 walkingPathfinder(
                                     state,
                                     1,
                                     state.coords.getIn([1, 0]).toJS(),
                                     closest.get(-1).toJS()
                                 ).then(function(val) {
+                                    // console.log(val);
+                                    console.log("\n\n\n");
+                                    console.log(val);
+                                    function iterateSteps(
+                                        currentSpot,
+                                        nextSpot,
+                                        path,
+                                        callback
+                                    ) {
+                                        if (path.length > 0) {
+                                            // console.log(
+                                            //     `currentSpot: ${JSON.stringify(
+                                            //         currentSpot
+                                            //     )}`
+                                            // );
+                                            // console.log(
+                                            //     `nextSpot: ${JSON.stringify(
+                                            //         nextSpot
+                                            //     )}`
+                                            // );
+                                            const stepDiff = {
+                                                x: nextSpot.x - currentSpot.x,
+                                                y: nextSpot.y - currentSpot.y
+                                            };
+                                            let letter;
+                                            if (stepDiff.x === -1) {
+                                                letter = "w";
+                                            } else if (stepDiff.x === 1) {
+                                                letter = "s";
+                                            } else if (stepDiff.y === 1) {
+                                                letter = "d";
+                                            } else if (stepDiff.y === -1) {
+                                                letter = "a";
+                                            }
+                                            console.log(letter);
+                                            setTimeout(
+                                                function() {
+                                                    keypress.bind(context)(
+                                                        letter
+                                                    );
+                                                    iterateSteps(
+                                                        path[0],
+                                                        path[1],
+                                                        path.slice(1)
+                                                    );
+                                                },
+                                                100,
+                                                path
+                                            );
+
+                                            // keypress.bind(context)(letter);
+                                            // iterateSteps(
+                                            //     path[0],
+                                            //     path[1],
+                                            //     path.slice(1, -1)
+                                            // );
+                                        }
+                                    }
+                                    iterateSteps(val[0], val[1], val.slice(1));
+
                                     // Create an array of steps
                                     // if one value changes,
                                     // track how long the other value stays the same
                                     // new coord is the last value where it stays the same
-                                    function findDirection(start, end) {
-                                        if (start.x === end.x) {
-                                            return "y";
-                                        } else if (start.y === end.y) {
-                                            return "x";
-                                        }
-                                    }
-                                    const steppingStones = val.reduce(function(
-                                        accumulator,
-                                        currentVal,
-                                        currentIndex,
-                                        array
-                                    ) {
-                                        console.log("currentVal:");
-                                        console.log(currentVal);
-                                        if (currentIndex === 0) {
-                                            return accumulator;
-                                        }
-                                        if (
-                                            currentVal.x ===
-                                            array[currentIndex - 1].x
-                                        ) {
-                                            const newY =
-                                                currentVal.y -
-                                                array[currentIndex - 1].y;
-                                            return accumulator.concat({
-                                                y: newY
-                                            });
-                                        } else if (
-                                            currentVal.y ===
-                                            array[currentIndex - 1].y
-                                        ) {
-                                            const newX =
-                                                currentVal.x -
-                                                array[currentIndex - 1].x;
-                                            return accumulator.concat({
-                                                x: newX
-                                            });
-                                        }
-                                    },
-                                    []);
-                                    console.log(steppingStones);
+                                    // function findDirection(start, end) {
+                                    //     if (start.x === end.x) {
+                                    //         return "y";
+                                    //     } else if (start.y === end.y) {
+                                    //         return "x";
+                                    //     }
+                                    // }
+                                    // try {
+                                    //     const steppingStones = val.reduce(
+                                    //         function(
+                                    //             accumulator,
+                                    //             currentVal,
+                                    //             currentIndex,
+                                    //             array
+                                    //         ) {
+                                    //             if (currentIndex === 0) {
+                                    //                 return accumulator;
+                                    //             }
+                                    //             if (
+                                    //                 currentVal.x ===
+                                    //                 array[currentIndex - 1].x
+                                    //             ) {
+                                    //                 const newY =
+                                    //                     array[currentIndex - 1]
+                                    //                         .y - currentVal.y;
+                                    //                 if (
+                                    //                     currentIndex > 0 &&
+                                    //                     accumulator[
+                                    //                         accumulator.length -
+                                    //                             1
+                                    //                     ].axis === "y"
+                                    //                 ) {
+                                    //                     return accumulator
+                                    //                         .slice(0, -1)
+                                    //                         .concat({
+                                    //                             val: newY,
+                                    //                             axis: "y"
+                                    //                         });
+                                    //                 } else {
+                                    //                     return accumulator.concat(
+                                    //                         {
+                                    //                             axis: "y",
+                                    //                             val:
+                                    //                                 accumulator[
+                                    //                                     accumulator.length -
+                                    //                                         1
+                                    //                                 ].val + newY
+                                    //                         }
+                                    //                     );
+                                    //                 }
+                                    //             } else if (
+                                    //                 currentVal.y ===
+                                    //                 array[currentIndex - 1].y
+                                    //             ) {
+                                    //                 const newX =
+                                    //                     array[currentIndex - 1]
+                                    //                         .x - currentVal.x;
+
+                                    //                 if (
+                                    //                     currentIndex > 0 &&
+                                    //                     accumulator[
+                                    //                         accumulator.length -
+                                    //                             1
+                                    //                     ].axis === "x"
+                                    //                 ) {
+                                    //                     return accumulator
+                                    //                         .slice(0, -1)
+                                    //                         .concat({
+                                    //                             val:
+                                    //                                 accumulator[
+                                    //                                     accumulator.length -
+                                    //                                         1
+                                    //                                 ].val +
+                                    //                                 newX,
+                                    //                             axis: "y"
+                                    //                         });
+                                    //                 } else {
+                                    //                     return accumulator.concat(
+                                    //                         {
+                                    //                             axis: "x",
+                                    //                             val: newX
+                                    //                         }
+                                    //                     );
+                                    //                 }
+                                    //             }
+                                    //         },
+                                    //         [{ axis: "", val: 0 }]
+                                    //     );
+                                    //     console.log(steppingStones);
+                                    // } catch (err) {
+                                    // console.log(err);
+                                    // }
+                                    // returns [
+                                    // {y: 1},
+                                    // {x: -1},
+                                    // {y: 1},
+                                    // ...
+                                    // ]
+                                    // Get that array of objects and reduce it further
+                                    // something like
+                                    // [
+                                    // {y: 1},
+                                    // {x: -3},
+                                    // {y: 2},
+                                    // {x: -4}
+                                    // ]
+                                    //
+                                    // And then iterate over that, call keypress n times
+                                    // with the key being picked by letter/number combination
+                                    // console.log(
+                                    //     steppingStones.reduce(function(
+                                    //         accumulator,
+                                    //         currentVal,
+                                    //         currentIndex,
+                                    //         array
+                                    //     ) {})
+                                    // );
                                 });
-                                directWalking(coord, occupied, ms, callback)
-                                    .then(data => {
-                                        return continuousWalk(
-                                            data.coords.getIn([1, 0]),
-                                            data.occupied,
-                                            ms,
-                                            callback
-                                        );
-                                    })
-                                    .catch(reason => console.log(reason));
+                                // directWalking(coord, occupied, ms, callback)
+                                //     .then(data => {
+                                //         return continuousWalk(
+                                //             data.coords.getIn([1, 0]),
+                                //             data.occupied,
+                                //             ms,
+                                //             callback
+                                //         );
+                                //     })
+                                //     .catch(reason => console.log(reason));
                             } else {
                                 console.log("Ran out of squares to grab!");
                             }
