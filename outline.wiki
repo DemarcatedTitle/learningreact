@@ -36,11 +36,24 @@
 
 = What I was doing last =
 
-I think I need something that acts as a better driving force for winning and
-losing. My idea is just a timer and whoever gets the most squares in the time
-limit wins, or whoever crashes into something loses. 
+** Started a major refactor, might need some more planning. 
 
-The timer is pretty much set up. It just needs some events to make happen. Like
-a function that does an io.emit:"Time's up!" (wait a moment) io.emit:"X is the
-winner" and blocks further actions in game
+I want a tutorial feature
+On logging in, you get a message informing you that typing /tutorial starts it
+Tutorial will display the keys you press and go over the rules. 
 
+
+It looks like there are problems so far: 
+I don't think interaction is cut off with previous room
+
+Typing /tutorial 
+    * [X] should remove you from current game
+    * [X] should place you in a private instance that can't be joined
+        * [X] It should isolate you from seeing what's going on outside the
+    * [X] A few messages should be sent
+    * [X] Create a function that sends messages in a timed manner
+        * [X] Something informing you of the keys
+        * [X] Something that informs you the rules of the game
+    * [ ] In the private instance, you should be able to move around and interact
+    * [ ] Maybe have a reset button if user triggers a loss condition
+    * [ ] Nothing in the tutorial should affect game history

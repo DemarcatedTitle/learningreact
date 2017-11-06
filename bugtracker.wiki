@@ -1,4 +1,5 @@
 = back-end =
+    * [ ] /tutorial twice in a row doesn't work
     * [ ] Something causes a function in statechanges.js to be called, while
           there is no playerList, breaking the server
     * [ ] There seem to be miscellaneous bugs regarding how I set up player list size

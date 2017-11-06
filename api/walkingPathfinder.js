@@ -27,7 +27,11 @@ module.exports = function walkingPathfinder(
                 return sum.concat(value);
             })
             .filter(function(coord) {
-                return !state.coords.get(0).includes(coord);
+                // console.log(`state.coords.get(1): ${state.coords.get(1)}`);
+                // console.log(`coord: ${coord}`);
+                // console.log(state.coords.get(1).includes(coord));
+
+                return !state.coords.get(1).includes(coord);
             });
         easystar.setGrid(grid);
         easystar.setAcceptableTiles(acceptableTiles);

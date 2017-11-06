@@ -38,6 +38,7 @@ exports.keypress = function keypress(key) {
 
         let newState;
         function frontUpdate(key) {
+            console.log(`keypress key: ${key}`);
             return new Promise(resolve => {
                 if (state.collision === undefined && !state.outcome) {
                     newState = changeState(
@@ -76,7 +77,8 @@ exports.keypress = function keypress(key) {
                     io.in(currentRoom).emit("outcome", state.outcome);
                     socket.removeAllListeners("keypress");
                 }
-                resolve(newState);
+                newState.then(data => resolve(data));
+                // resolve(newState);
             });
         }
         frontUpdate(key).then(data => resolve(data));
