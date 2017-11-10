@@ -23,13 +23,16 @@ const knex = require('knex')({
 });
 var bookshelf = require('bookshelf')(knex);
 
+const User = bookshelf.Model.extend({ tableName: 'users' });
+
 // Things that should be in a sql database:
 // Users
 // History
 //
 // Things that should live in memory or maybe redis:
+// Actual game state
 
-const users = new Map();
+// const users = new Map();
 var server = new Hapi.Server({
   connections: {
     routes: {
@@ -39,8 +42,21 @@ var server = new Hapi.Server({
     },
   },
 });
-
+// Need to put bookshelf name lookup here
+// I believe this is not getting called because front end routing is using react router, unrelated to this server.
 var validate = function(decoded, request, callback) {
+  console.log('\n\n\nvalidate\n\n\n');
+  var User = bookshelf.Model.extend({ tableName: 'users' });
+  User.where('name', decoded.username)
+    .fetch()
+    .then(function(user) {
+      console.log('\n\n\nvalidate');
+      console.log(user);
+    })
+    .catch(function(err) {
+      console.log('\n\nerr\n\n');
+      console.log(err);
+    });
   console.log(decoded);
   if (!users[decoded.username]) {
     return callback(null, false);
@@ -87,12 +103,17 @@ login.register(require('hapi-auth-jwt2'), function(err) {
           if (err) {
             reply(err);
           } else {
-            users.set(request.payload.username, {
-              password: hash,
-              username: request.payload.username,
-            });
-
-            reply({ text: 'success' });
+            User.forge(
+              {
+                name: request.payload.username,
+                password: hash,
+              },
+              { hasTimestamps: true }
+            )
+              .save()
+              .then(function(model) {
+                reply({ text: 'success' });
+              });
           }
         });
       },
@@ -110,16 +131,40 @@ login.register(require('hapi-auth-jwt2'), function(err) {
       config: { auth: false },
       handler: function(request, reply) {
         console.log(request.payload);
-        // Good user name works, bad user name is a stacktrace
         var User = bookshelf.Model.extend({ tableName: 'users' });
         User.where('name', request.payload.username)
           .fetch()
           .then(function(user) {
-            if (user.attributes.password === request.payload.password) {
-              return reply({
-                username: user.attributes.name,
-                idtoken: token,
-              });
+            if (user === null) {
+              return reply(
+                Boom.unauthorized('Something went wrong, please try logging in')
+              );
+            } else {
+              bcrypt.compare(
+                request.payload.password,
+                user.attributes.password,
+                function(err, res) {
+                  if (res === true) {
+                    var token = JWT.sign(
+                      { username: request.payload.username },
+                      secret,
+                      {
+                        expiresIn: 1000000000,
+                      }
+                    );
+                    return reply({
+                      username: user.attributes.name,
+                      idtoken: token,
+                    });
+                  } else {
+                    return reply(
+                      Boom.unauthorized(
+                        'Something went wrong, please try logging in'
+                      )
+                    );
+                  }
+                }
+              );
             }
             console.log('then');
             console.log(user);
@@ -128,33 +173,27 @@ login.register(require('hapi-auth-jwt2'), function(err) {
             console.log('\n\nerr\n\n');
             console.log(err);
           });
-        // console.log(
-        //     `request.payload: ${JSON.stringify(request.payload)}`
-        // );
         // Set expiresIn to a long time to work on front end things.
-        var token = JWT.sign({ username: request.payload.username }, secret, {
-          expiresIn: 1000000000,
-        });
-        function authenticate(username, password) {
-          bcrypt.compare(
-            password,
-            users.get(request.payload.username).password,
-            function(err, res) {
-              if (res === true) {
-                return reply({
-                  username: username,
-                  idtoken: token,
-                });
-              } else {
-                return reply(
-                  Boom.unauthorized(
-                    'Something went wrong, please try logging in'
-                  )
-                );
-              }
-            }
-          );
-        }
+        // function authenticate(username, password) {
+        //   bcrypt.compare(
+        //     password,
+        //     users.get(request.payload.username).password,
+        //     function(err, res) {
+        //       if (res === true) {
+        //         return reply({
+        //           username: username,
+        //           idtoken: token,
+        //         });
+        //       } else {
+        //         return reply(
+        //           Boom.unauthorized(
+        //             'Something went wrong, please try logging in'
+        //           )
+        //         );
+        //       }
+        //     }
+        //   );
+        // }
         // return authenticate(request.payload.username, request.payload.password);
       },
     },
