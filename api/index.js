@@ -130,7 +130,6 @@ login.register(require('hapi-auth-jwt2'), function(err) {
       path: '/api/auth',
       config: { auth: false },
       handler: function(request, reply) {
-        console.log(request.payload);
         var User = bookshelf.Model.extend({ tableName: 'users' });
         User.where('name', request.payload.username)
           .fetch()
@@ -166,8 +165,6 @@ login.register(require('hapi-auth-jwt2'), function(err) {
                 }
               );
             }
-            console.log('then');
-            console.log(user);
           })
           .catch(function(err) {
             console.log('\n\nerr\n\n');
@@ -278,3 +275,4 @@ server.start(err => {
   }
   console.log(`Server running at: ${server.info.uri}`);
 });
+exports.bookshelf = bookshelf;
