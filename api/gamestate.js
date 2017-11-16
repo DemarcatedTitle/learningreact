@@ -20,4 +20,3 @@ exports.games = new Map();
 exports.activePlayers = new Map();
 // key = username
 // value = currentRoom
-exports.gameHistory = [];

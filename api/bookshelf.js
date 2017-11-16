@@ -8,7 +8,7 @@ const knex = require('knex')({
     port: 5432,
   },
 });
-var bookshelf = require('bookshelf')(knex);
+var bookshelf = new require('bookshelf')(knex);
 var User = bookshelf.Model.extend({
   tableName: 'users',
 });
@@ -23,9 +23,13 @@ exports.addGameHistory = function addGameHistory(player1, player2, winner) {
   })
     .fetchAll()
     .then(function(users) {
+      console.log('addGameHistory');
+      // I broke something here where pid2 doesn't get saved
       const pid1 = users.find(user => user.attributes.name === player1)
         .attributes.id;
-      Gamehistory.forge({ pid1: pid1, outcome: winner })
+      const pid2 = users.find(user => user.attributes.name === player2)
+        .attributes.id;
+      Gamehistory.forge({ pid1: pid1, pid2: pid2, outcome: winner })
         .save()
         .then();
     });
@@ -34,7 +38,7 @@ exports.addGameHistory = function addGameHistory(player1, player2, winner) {
 // selecting for player1, player2, outcome, create_at
 exports.fetchGameHistory = function fetchGameHistory() {
   try {
-    const Matches = bookshelf.Model.extend({
+    var Matches = bookshelf.Model.extend({
       tableName: 'gamehistory',
     });
     return Matches.query(function(qb) {
