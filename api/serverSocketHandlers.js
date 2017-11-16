@@ -167,7 +167,7 @@ exports.io = function(listener, secret, users) {
     socket.on('chat message', chatmessage.bind(socketContext));
     socket.on('join', join.bind(socketContext));
     socket.on('gameHistory', function(request) {
-      console.log('gameHistory requested');
+      console.log('gamehistory requested');
       fetchGameHistory().then(function(gamehistory) {
         const matches = Array.from(gamehistory);
         const gamehistoryResponse = matches.map(function(item) {

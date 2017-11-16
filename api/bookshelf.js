@@ -24,7 +24,6 @@ exports.addGameHistory = function addGameHistory(player1, player2, winner) {
     .fetchAll()
     .then(function(users) {
       console.log('addGameHistory');
-      // I broke something here where pid2 doesn't get saved
       const pid1 = users.find(user => user.attributes.name === player1)
         .attributes.id;
       const pid2 = users.find(user => user.attributes.name === player2)

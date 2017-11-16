@@ -101,9 +101,11 @@ exports.join = function(room) {
                 const playersHistory = Array.from(players.keys());
                 state.outcome = outcome;
 
-                addGameHistory(playerArr[0], playerArr[1], winner).then(val =>
-                  console.log(val)
-                );
+                addGameHistory(
+                  playersHistory[0],
+                  playersHistory[1],
+                  winner
+                ).then(val => console.log(val));
               }
             });
           }

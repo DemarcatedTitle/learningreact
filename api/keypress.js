@@ -67,9 +67,7 @@ exports.keypress = function keypress(key) {
             console.log(Array.from(state.players.keys()));
             const players = Array.from(state.players.keys());
 
-            addGameHistory(players[0], players[1], winner).then(val =>
-              console.log(val)
-            );
+            addGameHistory(players[0], players[1], winner).then();
             // gameHistory.push({
             //   date: new Date(),
             //   players: Array.from(state.players.keys()),
