@@ -31,11 +31,19 @@
                 2. [ ] Buttons need work
     11. [X] Establish Win and Lose Conditions
     12. [X] Make a game history page
-    13. [ ] Make a tutorial
-    14. [ ] A production version
+    13. [X] Set up some database interaction. 
+    14. [ ] Make a tutorial
+    15. [ ] A production version
 
 = What I was doing last =
 
+Set up some database interaction. 
+
+
+
+****
+= Below is now backburner/secondary to what I am doing. =
+****
 ** Started a major refactor, might need some more planning. 
 
 I want a tutorial feature
