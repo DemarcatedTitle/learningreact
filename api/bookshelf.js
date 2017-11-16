@@ -1,11 +1,18 @@
+// const knex = require('knex')({
+//   client: 'pg',
+//   connection: {
+//     host: 'localhost',
+//     user: 'postgres',
+//     password: 'root',
+//     database: 'postgres',
+//     port: 5432,
+//   },
+// });
+
 const knex = require('knex')({
-  client: 'pg',
+  client: 'sqlite3',
   connection: {
-    host: 'localhost',
-    user: 'postgres',
-    password: 'root',
-    database: 'postgres',
-    port: 5432,
+    filename: './walkgrid.sqlite',
   },
 });
 var bookshelf = new require('bookshelf')(knex);
