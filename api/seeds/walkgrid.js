@@ -7,8 +7,9 @@ exports.seed = function(knex, Promise) {
       return knex('users').insert([
         {
           id: 1,
-          name: '$2a$10$JutnN6BCKJTO4PFF6hvcOebXLYZXLAB6iKOAqO8mzIrHGVkVmVI3u',
-          password: 'password',
+          name: 'firstuser',
+          password:
+            '$2a$10$JutnN6BCKJTO4PFF6hvcOebXLYZXLAB6iKOAqO8mzIrHGVkVmVI3u',
           created_at: knex.fn.now(),
           updated_at: knex.fn.now(),
         },
