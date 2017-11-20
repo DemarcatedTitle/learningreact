@@ -11,19 +11,9 @@ const JWT = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const secret = 'nevershareyoursecret';
 const socketHandlers = require('./serverSocketHandlers.js');
-const knex = require('knex')({
-  client: 'pg',
-  connection: {
-    host: 'localhost',
-    user: 'postgres',
-    password: 'root',
-    database: 'postgres',
-    port: 5432,
-  },
-});
-var bookshelf = require('bookshelf')(knex);
-
-const User = bookshelf.Model.extend({ tableName: 'users' });
+const verifyCreds = '';
+const registerUser = '';
+const bookshelf = require('./bookshelf.js');
 
 // Things that should be in a sql database:
 // Users
@@ -32,7 +22,6 @@ const User = bookshelf.Model.extend({ tableName: 'users' });
 // Things that should live in memory or maybe redis:
 // Actual game state
 
-// const users = new Map();
 var server = new Hapi.Server({
   connections: {
     routes: {
@@ -98,25 +87,7 @@ login.register(require('hapi-auth-jwt2'), function(err) {
           },
         },
       },
-      handler: function(request, reply) {
-        bcrypt.hash(request.payload.password, 10, function(err, hash) {
-          if (err) {
-            reply(err);
-          } else {
-            User.forge(
-              {
-                name: request.payload.username,
-                password: hash,
-              },
-              { hasTimestamps: true }
-            )
-              .save()
-              .then(function(model) {
-                reply({ text: 'success' });
-              });
-          }
-        });
-      },
+      handler: bookshelf.registerUser,
     },
     {
       // This is where we will log in
@@ -129,70 +100,7 @@ login.register(require('hapi-auth-jwt2'), function(err) {
       method: 'POST',
       path: '/api/auth',
       config: { auth: false },
-      handler: function(request, reply) {
-        var User = bookshelf.Model.extend({ tableName: 'users' });
-        User.where('name', request.payload.username)
-          .fetch()
-          .then(function(user) {
-            if (user === null) {
-              return reply(
-                Boom.unauthorized('Something went wrong, please try logging in')
-              );
-            } else {
-              bcrypt.compare(
-                request.payload.password,
-                user.attributes.password,
-                function(err, res) {
-                  if (res === true) {
-                    var token = JWT.sign(
-                      { username: request.payload.username },
-                      secret,
-                      {
-                        expiresIn: 1000000000,
-                      }
-                    );
-                    return reply({
-                      username: user.attributes.name,
-                      idtoken: token,
-                    });
-                  } else {
-                    return reply(
-                      Boom.unauthorized(
-                        'Something went wrong, please try logging in'
-                      )
-                    );
-                  }
-                }
-              );
-            }
-          })
-          .catch(function(err) {
-            console.log('\n\nerr\n\n');
-            console.log(err);
-          });
-        // Set expiresIn to a long time to work on front end things.
-        // function authenticate(username, password) {
-        //   bcrypt.compare(
-        //     password,
-        //     users.get(request.payload.username).password,
-        //     function(err, res) {
-        //       if (res === true) {
-        //         return reply({
-        //           username: username,
-        //           idtoken: token,
-        //         });
-        //       } else {
-        //         return reply(
-        //           Boom.unauthorized(
-        //             'Something went wrong, please try logging in'
-        //           )
-        //         );
-        //       }
-        //     }
-        //   );
-        // }
-        // return authenticate(request.payload.username, request.payload.password);
-      },
+      handler: bookshelf.login,
     },
     {
       method: 'GET',

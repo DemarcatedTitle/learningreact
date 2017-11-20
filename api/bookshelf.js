@@ -1,3 +1,7 @@
+const bcrypt = require('bcrypt');
+const Boom = require('boom');
+const JWT = require('jsonwebtoken');
+const secret = 'nevershareyoursecret';
 // const knex = require('knex')({
 //   client: 'pg',
 //   connection: {
@@ -23,6 +27,65 @@ const Gamehistory = bookshelf.Model.extend({
   tableName: 'gamehistory',
   hasTimestamps: true,
 });
+exports.bookshelf = bookshelf;
+exports.registerUser = function registerUser(request, reply) {
+  bcrypt.hash(request.payload.password, 10, function(err, hash) {
+    if (err) {
+      reply(err);
+    } else {
+      User.forge({
+        name: request.payload.username,
+        password: hash,
+        created_at: knex.fn.now(),
+        updated_at: knex.fn.now(),
+      })
+        .save()
+        .then(function(model) {
+          reply({ text: 'success' });
+        });
+    }
+  });
+};
+exports.login = function login(request, reply) {
+  var User = bookshelf.Model.extend({ tableName: 'users' });
+  User.where('name', request.payload.username)
+    .fetch()
+    .then(function(user) {
+      if (user === null) {
+        return reply(
+          Boom.unauthorized('Something went wrong, please try logging in')
+        );
+      } else {
+        bcrypt.compare(
+          request.payload.password,
+          user.attributes.password,
+          function(err, res) {
+            if (res === true) {
+              var token = JWT.sign(
+                { username: request.payload.username },
+                secret,
+                {
+                  expiresIn: 1000000000,
+                }
+              );
+              return reply({
+                username: user.attributes.name,
+                idtoken: token,
+              });
+            } else {
+              return reply(
+                Boom.unauthorized('Something went wrong, please try logging in')
+              );
+            }
+          }
+        );
+      }
+    })
+    .catch(function(err) {
+      console.log('\n\nErr\n\n');
+      console.log(err);
+    });
+};
 
 exports.addGameHistory = function addGameHistory(player1, player2, winner) {
   return User.query(function(qb) {
