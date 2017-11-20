@@ -82,7 +82,6 @@ class SocketContainer extends Component {
         });
     }
     gameHistory() {
-        console.log("history request function");
         socket.emit("gameHistory", "request");
     }
     createRoom(payload) {
@@ -97,7 +96,6 @@ class SocketContainer extends Component {
         socket.emit("join", chatroom);
     }
     updateChatlogs(messages) {
-        console.log(messages);
         const messagesObj = JSON.parse(messages);
         let tempLog = this.state.chatlogs;
         tempLog.set(messagesObj.room, messagesObj.logs);

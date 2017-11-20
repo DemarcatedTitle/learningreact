@@ -66,8 +66,6 @@ class MobileButton extends React.PureComponent {
         };
         event.key = keys[this.props.direction];
         this.props.handleKeyPress(event);
-        console.log(this.props.handleKeyPress);
-        console.log(this.props.direction);
     }
     render() {
         let classes = `${this.props.className} MobileButton`;

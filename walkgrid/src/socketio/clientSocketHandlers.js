@@ -21,7 +21,6 @@ exports.rooms = function(rooms) {
 exports.error = function(error) {
     console.log(`Error: ${error}`);
     window.localStorage.clear();
-    console.log(this);
     // this.close();
     return this.setState({ loggedIn: false });
 };
@@ -35,7 +34,6 @@ exports.users = function(users) {
         });
     } else {
         console.log(`userobj has some undefined ${JSON.stringify(userObj)}`);
-        console.log(typeof userObj);
         // return this.setState({ users: userObj.users });
     }
 };
@@ -84,5 +82,4 @@ exports.addAllListeners = function(socket) {
     console.log(socket.listeners("error"));
 };
 exports.logger = function() {
-    console.log(this);
 };
