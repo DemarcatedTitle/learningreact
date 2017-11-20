@@ -40,7 +40,6 @@ exports.keypress = function keypress(key) {
 
     let newState;
     function frontUpdate(key) {
-      console.log(`keypress key: ${key}`);
       return new Promise(resolve => {
         if (state.collision === undefined && !state.outcome) {
           newState = changeState(
@@ -57,14 +56,12 @@ exports.keypress = function keypress(key) {
         io.in(currentRoom).emit('coords', state.coords);
         io.in(currentRoom).emit('occupied', state.occupied);
         if (state.collision) {
-          console.log('Collision Detected');
           if (!state.outcome) {
             const winnerMap = new Map(state.players);
             winnerMap.delete(username);
             const winner = winnerMap.keys().next().value;
             const outcome = `${winner} is the winner!`;
             state.outcome = outcome;
-            console.log(Array.from(state.players.keys()));
             const players = Array.from(state.players.keys());
 
             addGameHistory(players[0], players[1], winner).then();

@@ -3,7 +3,6 @@ const closestSquare = require("./grid/utilities/closestSquare.js");
 const recWalkAxis = require("./grid/utilities/recWalkAxis.js");
 // recWalkAxis: use callback function set amount of times
 // function recWalkAxis(amount, ms, args, callback) {
-//     console.log(args);
 //     if (amount > 0) {
 //         setTimeout(
 //             function(args) {
@@ -34,9 +33,7 @@ function whichKey(steps) {
 module.exports = function directWalking(startCoord, occupied, ms, cb) {
     return new Promise(resolve => {
         try {
-            console.log(`startCoord ${startCoord}`);
             // grab closest square
-            // console.log(`occupied: ${occupied}`);
             const closest = closestSquare(startCoord, occupied);
             // Get steps to closest square
             const steps = stepsToTake(startCoord, closest.get(0));

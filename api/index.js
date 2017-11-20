@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 /* eslint-disable indent */
 const { List, fromJS } = require('immutable');
@@ -26,19 +25,13 @@ var server = new Hapi.Server({});
 // Need to put bookshelf name lookup here
 // I believe this is not getting called because front end routing is using react router, unrelated to this server.
 var validate = function(decoded, request, callback) {
-  console.log('\n\n\nvalidate\n\n\n');
   var User = bookshelf.Model.extend({ tableName: 'users' });
   User.where('name', decoded.username)
     .fetch()
-    .then(function(user) {
-      console.log('\n\n\nvalidate');
-      console.log(user);
-    })
+    .then(function(user) {})
     .catch(function(err) {
-      console.log('\n\nerr\n\n');
       console.log(err);
     });
-  console.log(decoded);
   if (!users[decoded.username]) {
     return callback(null, false);
   } else {

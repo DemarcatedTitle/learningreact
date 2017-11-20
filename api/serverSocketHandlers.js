@@ -43,11 +43,8 @@ function forfeitPrevious(username, socket, currentRoom, reason) {
       const winner = winnerMap.keys().next().value;
       outcome = `${username} has forfeited, ${winner} is the winner!`;
       let players = Array.from(prevPlayers.keys());
-      console.log(players);
       if (players.length > 1) {
-        addGameHistory(players[0], players[1], winner).then(val =>
-          console.log(val)
-        );
+        addGameHistory(players[0], players[1], winner).then();
       }
       games.get(previousRoom).outcome = outcome;
     } else {
@@ -158,7 +155,6 @@ exports.io = function(listener, secret, users) {
       console.log(reason);
       const roomsLeaving = Object.keys(socket.rooms);
       roomsLeaving.forEach(function(room) {
-        console.log(`${chatters.get(socket.id)} just left`);
         socket.to(room).emit('userLeft', chatters.get(socket.id));
       });
       chatters.delete(socket.id);
@@ -167,7 +163,6 @@ exports.io = function(listener, secret, users) {
     socket.on('chat message', chatmessage.bind(socketContext));
     socket.on('join', join.bind(socketContext));
     socket.on('gameHistory', function(request) {
-      console.log('gamehistory requested');
       fetchGameHistory().then(function(gamehistory) {
         const matches = Array.from(gamehistory);
         const gamehistoryResponse = matches.map(function(item) {
@@ -181,7 +176,6 @@ exports.io = function(listener, secret, users) {
         io.to(socket.id).emit('gameHistory', gamehistoryResponse);
       });
     });
-    console.log('connection');
   });
   const repl = require('repl');
   repl.start('> ').context.io = io;
