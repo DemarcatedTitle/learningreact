@@ -72,8 +72,11 @@
         border: 1px solid black;
     }
     .up {
-        position: absolute;
-        top: -400px;
+        position: relative;
+        /* position: absolute; */
+        top: -100%;
+        right: -20%;
+        width: inherit;
     }
     .griddetected {
         height: 2em;
