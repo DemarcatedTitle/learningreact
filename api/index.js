@@ -33,23 +33,23 @@ var server = new Hapi.Server({
 });
 // Need to put bookshelf name lookup here
 // I believe this is not getting called because front end routing is using react router, unrelated to this server.
-var validate = function(decoded, request, callback) {
+function validate(decoded, request, callback) {
   // console.log('\n\n\nvalidate\n\n\n');
-  // try {
-  //   bookshelf.jwtCheck(decoded.username, decoded.id).then(function(user) {
-  //     console.log(user);
-  //     if (user === null) {
-  //       return callback(null, false);
-  //     } else {
-  //       console.log('Else statement');
-  //       return callback(null, true);
-  //     }
-  //   });
-  // } catch (err) {
-  //   console.log(err);
-  // }
-  return callback(null, true);
-};
+  try {
+    bookshelf.jwtCheck(decoded.username, decoded.id).then(function(user) {
+      console.log(user);
+      if (user === null) {
+        return callback(null, false);
+      } else {
+        return callback(null, true);
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+  console.log('Test');
+  // return callback(null, true);
+}
 server.register(Inert, () => {});
 server.connection({ port: 8000, labels: 'login' });
 const login = server.select('login');
@@ -112,11 +112,19 @@ login.register(require('hapi-auth-jwt2'), function(err) {
       method: 'POST',
       path: '/api/profile',
       config: {
+        auth: 'jwt',
         validate: {
           payload: {
-            bio: Joi.string().max(1000),
-            located_at: Joi.string().max(25),
-            favorite_game: Joi.string().max(20),
+            bio: Joi.string()
+              .min(0)
+              .max(1000)
+              .allow(''),
+            located_at: Joi.string()
+              .max(25)
+              .allow(''),
+            favorite_game: Joi.string()
+              .max(20)
+              .allow(''),
           },
         },
       },
