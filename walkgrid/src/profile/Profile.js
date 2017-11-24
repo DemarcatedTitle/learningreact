@@ -8,7 +8,7 @@ class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      locatedAt: '',
+      located_at: '',
       bio: '',
       favorite_game: '',
       redirectToReferrer: false,
@@ -32,6 +32,7 @@ class Profile extends React.Component {
   }
   // Must change click
   handleClick(event) {
+    console.log(this.state);
     event.preventDefault();
     fetch('/api/profile', {
       method: 'POST',
@@ -40,7 +41,7 @@ class Profile extends React.Component {
         Authorization: localStorage.getItem('idtoken'),
       },
       body: JSON.stringify({
-        locatedAt: this.state.locatedat,
+        located_at: this.state.located_at,
         bio: this.state.bio,
         favorite_game: this.state.favorite_game,
       }),
@@ -66,15 +67,20 @@ class Profile extends React.Component {
         <div className="loginContainer">
           <form className="login">
             <div>
-              <label htmlFor="location">Location</label>
+              <label htmlFor="located_at">Location</label>
               <div className="spacer" />
-              <input name="location" />
-              <label htmlFor="favoriteGame">Favorite Game</label>
+              <input onChange={this.handleChange} name="located_at" />
+              <label htmlFor="favorite_game">Favorite Game</label>
               <div className="spacer" />
-              <input name="favoriteGame" />
+              <input onChange={this.handleChange} name="favorite_game" />
               <label htmlFor="bio">Bio</label>
               <div className="spacer" />
-              <textarea rows="10" cols="40" name="bio" />
+              <textarea
+                onChange={this.handleChange}
+                rows="10"
+                cols="40"
+                name="bio"
+              />
               <button onClick={this.handleClick}>Save</button>
             </div>
           </form>

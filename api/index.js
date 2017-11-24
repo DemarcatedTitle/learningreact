@@ -47,8 +47,6 @@ function validate(decoded, request, callback) {
   } catch (err) {
     console.log(err);
   }
-  console.log('Test');
-  // return callback(null, true);
 }
 server.register(Inert, () => {});
 server.connection({ port: 8000, labels: 'login' });
