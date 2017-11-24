@@ -2,23 +2,23 @@ const bcrypt = require('bcrypt');
 const Boom = require('boom');
 const JWT = require('jsonwebtoken');
 const secret = 'nevershareyoursecret';
-// const knex = require('knex')({
-//   client: 'pg',
-//   connection: {
-//     host: 'localhost',
-//     user: 'postgres',
-//     password: 'root',
-//     database: 'postgres',
-//     port: 5432,
-//   },
-// });
-
 const knex = require('knex')({
-  client: 'sqlite3',
+  client: 'pg',
   connection: {
-    filename: './walkgrid.sqlite',
+    host: 'localhost',
+    user: 'postgres',
+    password: 'root',
+    database: 'postgres',
+    port: 5432,
   },
 });
+
+// const knex = require('knex')({
+//   client: 'sqlite3',
+//   connection: {
+//     filename: './walkgrid.sqlite',
+//   },
+// });
 var bookshelf = new require('bookshelf')(knex);
 var User = bookshelf.Model.extend({
   tableName: 'users',
@@ -28,6 +28,13 @@ const Gamehistory = bookshelf.Model.extend({
   hasTimestamps: true,
 });
 exports.bookshelf = bookshelf;
+exports.jwtCheck = function(username, id) {
+  return User.where('name', username)
+    .fetch()
+    .then(function(user) {
+      return user;
+    });
+};
 exports.registerUser = function registerUser(request, reply) {
   bcrypt.hash(request.payload.password, 10, function(err, hash) {
     if (err) {
@@ -61,8 +68,9 @@ exports.login = function login(request, reply) {
           user.attributes.password,
           function(err, res) {
             if (res === true) {
+              console.log(user.attributes);
               var token = JWT.sign(
-                { username: request.payload.username },
+                { username: request.payload.username, id: user.attributes.id },
                 secret,
                 {
                   expiresIn: 1000000000,

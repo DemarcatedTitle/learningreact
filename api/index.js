@@ -34,24 +34,21 @@ var server = new Hapi.Server({
 // Need to put bookshelf name lookup here
 // I believe this is not getting called because front end routing is using react router, unrelated to this server.
 var validate = function(decoded, request, callback) {
-  console.log('\n\n\nvalidate\n\n\n');
-  var User = bookshelf.Model.extend({ tableName: 'users' });
-  User.where('name', decoded.username)
-    .fetch()
-    .then(function(user) {
-      console.log('\n\n\nvalidate');
-      console.log(user);
-    })
-    .catch(function(err) {
-      console.log('\n\nerr\n\n');
-      console.log(err);
-    });
-  console.log(decoded);
-  if (!users[decoded.username]) {
-    return callback(null, false);
-  } else {
-    return callback(null, true);
-  }
+  // console.log('\n\n\nvalidate\n\n\n');
+  // try {
+  //   bookshelf.jwtCheck(decoded.username, decoded.id).then(function(user) {
+  //     console.log(user);
+  //     if (user === null) {
+  //       return callback(null, false);
+  //     } else {
+  //       console.log('Else statement');
+  //       return callback(null, true);
+  //     }
+  //   });
+  // } catch (err) {
+  //   console.log(err);
+  // }
+  return callback(null, true);
 };
 server.register(Inert, () => {});
 server.connection({ port: 8000, labels: 'login' });
@@ -112,11 +109,20 @@ login.register(require('hapi-auth-jwt2'), function(err) {
       },
     },
     {
-      method: 'GET',
-      path: '/noauth',
-      config: { auth: false },
+      method: 'POST',
+      path: '/api/profile',
+      config: {
+        validate: {
+          payload: {
+            bio: Joi.string().max(1000),
+            located_at: Joi.string().max(25),
+            favorite_game: Joi.string().max(20),
+          },
+        },
+      },
       handler: function(request, reply) {
-        return reply.response({ test: 'test' });
+        console.log('good jwt');
+        return reply.response({ PL: request.payload });
       },
     },
     {
@@ -124,6 +130,7 @@ login.register(require('hapi-auth-jwt2'), function(err) {
       path: '/api/restricted',
       config: { auth: 'jwt' },
       handler: function(request, reply) {
+        console.log('Someone made a request');
         reply('success');
       },
     },
