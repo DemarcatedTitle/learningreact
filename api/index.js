@@ -37,7 +37,6 @@ function validate(decoded, request, callback) {
   // console.log('\n\n\nvalidate\n\n\n');
   try {
     bookshelf.jwtCheck(decoded.username, decoded.id).then(function(user) {
-      console.log(user);
       if (user === null) {
         return callback(null, false);
       } else {
@@ -127,8 +126,12 @@ login.register(require('hapi-auth-jwt2'), function(err) {
         },
       },
       handler: function(request, reply) {
-        console.log('good jwt');
-        return reply.response({ PL: request.payload });
+        bookshelf
+          .profile(request.auth.credentials, request.payload)
+          .then(function(data) {
+            return reply.response({ savedStatus: data });
+          });
+        // Save the profile entry here
       },
     },
     {

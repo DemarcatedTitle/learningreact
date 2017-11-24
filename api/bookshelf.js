@@ -35,6 +35,35 @@ exports.jwtCheck = function(username, id) {
       return user;
     });
 };
+exports.profile = function profile(credentials, info) {
+  const Profile = bookshelf.Model.extend({
+    tableName: 'profiles',
+    hasTimestamps: true,
+  });
+  return Profile.where({ player_id: credentials.id })
+    .fetch()
+    .then(function(result) {
+      const exists = result === null ? false : true;
+      return new Profile()
+        .where({ player_id: credentials.id })
+        .save(
+          {
+            player_id: credentials.id,
+            bio: info.bio,
+            location: info.located_at,
+            favorite_game: info.favorite_game,
+          },
+          { patch: exists }
+        )
+        .then(function(data) {
+          return 'Saved!';
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    });
+  console.log(credentials);
+};
 exports.registerUser = function registerUser(request, reply) {
   bcrypt.hash(request.payload.password, 10, function(err, hash) {
     if (err) {
