@@ -106,6 +106,17 @@ login.register(require('hapi-auth-jwt2'), function(err) {
       },
     },
     {
+      method: 'get',
+      path: '/api/profile/{user}',
+      config: {
+        auth: 'jwt',
+      },
+      handler: function(request, reply) {
+        console.log(request.params);
+        bookshelf.getProfile(request.params.user, reply);
+      },
+    },
+    {
       method: 'POST',
       path: '/api/profile',
       config: {
@@ -116,7 +127,7 @@ login.register(require('hapi-auth-jwt2'), function(err) {
               .min(0)
               .max(1000)
               .allow(''),
-            located_at: Joi.string()
+            location: Joi.string()
               .max(25)
               .allow(''),
             favorite_game: Joi.string()

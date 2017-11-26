@@ -8,7 +8,7 @@ class Profile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      located_at: '',
+      location: '',
       bio: '',
       favorite_game: '',
       redirectToReferrer: false,
@@ -16,6 +16,32 @@ class Profile extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  componentDidMount() {
+    console.log('didmount');
+    fetch(`/api/profile/${this.props.match.params.user}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: localStorage.getItem('idtoken'),
+      },
+      credentials: 'same-origin',
+    }).then(response => {
+      response.json().then(data => {
+        if (data) {
+          this.setState(data);
+          console.log(this.state);
+        } else {
+          console.log('fetch else');
+          this.setState({
+            location: '',
+            bio: '',
+            favorite_game: '',
+            redirectToReferrer: false,
+          });
+        }
+      });
+    });
   }
   handleSubmit(event) {
     event.preventDefault();
@@ -28,6 +54,7 @@ class Profile extends React.Component {
   }
   handleChange(event) {
     const fieldName = event.target.type;
+    console.log(this.state);
     this.setState({ [event.target.name]: event.target.value });
   }
   // Must change click
@@ -41,7 +68,7 @@ class Profile extends React.Component {
         Authorization: localStorage.getItem('idtoken'),
       },
       body: JSON.stringify({
-        located_at: this.state.located_at,
+        location: this.state.location,
         bio: this.state.bio,
         favorite_game: this.state.favorite_game,
       }),
@@ -58,7 +85,6 @@ class Profile extends React.Component {
     });
   }
   componentDidUpdate() {}
-  componentDidMount() {}
   componentWillUnmount() {}
   render() {
     return (
@@ -67,16 +93,25 @@ class Profile extends React.Component {
         <div className="loginContainer">
           <form className="login">
             <div>
-              <label htmlFor="located_at">Location</label>
+              <label htmlFor="location">Location</label>
               <div className="spacer" />
-              <input onChange={this.handleChange} name="located_at" />
+              <input
+                value={this.state.location}
+                onChange={this.handleChange}
+                name="location"
+              />
               <label htmlFor="favorite_game">Favorite Game</label>
               <div className="spacer" />
-              <input onChange={this.handleChange} name="favorite_game" />
+              <input
+                value={this.state.favorite_game}
+                onChange={this.handleChange}
+                name="favorite_game"
+              />
               <label htmlFor="bio">Bio</label>
               <div className="spacer" />
               <textarea
                 onChange={this.handleChange}
+                value={this.state.bio}
                 rows="10"
                 cols="40"
                 name="bio"

@@ -35,6 +35,30 @@ exports.jwtCheck = function(username, id) {
       return user;
     });
 };
+exports.getProfile = function profile(user, reply) {
+  const Profile = bookshelf.Model.extend({
+    tableName: 'profiles',
+    hasTimestamps: true,
+  });
+  return Profile.where({ 'users.name': user })
+    .query(function(qb) {
+      qb.join('users', 'profiles.player_id', '=', 'users.id');
+      console.log(qb.toString());
+    })
+    .fetch()
+    .then(function(result) {
+      const exists = result === null ? false : true;
+      console.log(result.attributes);
+      if (exists === null) {
+        reply(Boom.notFound('User not found'));
+      } else {
+        reply(result.attributes);
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+};
 exports.profile = function profile(credentials, info) {
   const Profile = bookshelf.Model.extend({
     tableName: 'profiles',
@@ -50,7 +74,7 @@ exports.profile = function profile(credentials, info) {
           {
             player_id: credentials.id,
             bio: info.bio,
-            location: info.located_at,
+            location: info.location,
             favorite_game: info.favorite_game,
           },
           { patch: exists }

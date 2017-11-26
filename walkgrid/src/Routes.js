@@ -31,6 +31,29 @@ class Routes extends Component {
     let tempLog = this.state.chatlogs;
     tempLog.set(messagesObj.room, messagesObj.logs);
     this.setState({ chatlogs: tempLog });
+    this.getProfile = this.getProfile.bind(this);
+  }
+  getProfile() {
+    console.log(this.state);
+    fetch(`/api/profile/${localStorage.getItem('username')}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: localStorage.getItem('idtoken'),
+      },
+      credentials: 'same-origin',
+    }).then(response => {
+      response.json().then(data => {
+        if (data) {
+          console.log('Profile success');
+          console.log(data);
+          console.log(this);
+        } else {
+          console.error(JSON.stringify(data));
+          // return this.setState({ error: data.message });
+        }
+      });
+    });
   }
   render() {
     return (
@@ -44,7 +67,12 @@ class Routes extends Component {
               <Link to="/history">History</Link>
             </li>
             <li>
-              <Link to="/profile">Profile</Link>
+              <Link
+                // onClick={this.getProfile}
+                to={`/profile/${localStorage.getItem('username')}`}
+              >
+                Profile
+              </Link>
             </li>
             <LoggedIn
               logout={this.props.logout}
@@ -91,7 +119,7 @@ class Routes extends Component {
               loggedIn={this.props.loggedIn}
               historyProps={this.props.historyProps}
               socket={this.props.socket}
-              path="/profile"
+              path="/profile/:user"
               component={Profile}
             />
           </div>
