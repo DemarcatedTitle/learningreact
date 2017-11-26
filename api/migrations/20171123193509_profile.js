@@ -2,7 +2,7 @@ exports.up = function(knex, Promise) {
   knex.schema
     .createTable('profiles', function(table) {
       table.increments();
-      table.string('player_id');
+      table.integer('player_id');
       table.string('bio');
       table.string('location');
       table.string('favorite_game');
