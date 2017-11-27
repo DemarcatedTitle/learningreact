@@ -138,7 +138,7 @@ login.register(require('hapi-auth-jwt2'), function(err) {
       },
       handler: function(request, reply) {
         bookshelf
-          .profile(request.auth.credentials, request.payload)
+          .writeProfile(request.auth.credentials, request.payload)
           .then(function(data) {
             return reply.response({ savedStatus: data });
           });

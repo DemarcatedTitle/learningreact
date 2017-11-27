@@ -48,10 +48,11 @@ exports.getProfile = function profile(user, reply) {
     .fetch()
     .then(function(result) {
       const exists = result === null ? false : true;
-      console.log(result.attributes);
-      if (exists === null) {
-        reply(Boom.notFound('User not found'));
+      if (!exists) {
+        console.log('User not found');
+        reply(Boom.notFound('Profile not found. Did they create a profile?'));
       } else {
+        console.log(result.attributes);
         reply(result.attributes);
       }
     })
@@ -59,7 +60,7 @@ exports.getProfile = function profile(user, reply) {
       console.log(err);
     });
 };
-exports.profile = function profile(credentials, info) {
+exports.writeProfile = function profile(credentials, info) {
   const Profile = bookshelf.Model.extend({
     tableName: 'profiles',
     hasTimestamps: true,
@@ -80,13 +81,73 @@ exports.profile = function profile(credentials, info) {
           { patch: exists }
         )
         .then(function(data) {
-          return 'Saved!';
+          const version = bookshelf.Model.extend({
+            tableName: 'version',
+            hasTimestamps: true,
+          });
+          // if no profile exists, a profile is created (.save above)
+          // and a query is used to find the newly created profile's id
+          if (result === null) {
+            console.log('Result is null');
+            bookshelf
+              .knex('profiles')
+              .where('player_id', '=', credentials.id)
+              .select('id')
+              .as('profileid')
+              .then(function(profileId) {
+                console.log(profileId[0]);
+                version
+                  .query(function(qb) {})
+                  .fetch()
+                  .then(foundVer => {
+                    return new version()
+                      .save({
+                        profile_id: profileId[0].id,
+                        version_number: 1,
+                      })
+                      .then(function(ver) {
+                        // console.log(ver);
+                      })
+                      .catch(function(err) {
+                        console.log(err);
+                      });
+                    return 'Saved!';
+                  })
+                  .catch(function(err) {
+                    console.log(err);
+                  });
+              });
+          } else {
+            version
+              .query(function(qb) {
+                qb.join('profiles', 'profiles.id', '=', 'version.profile_id');
+                qb.where('version.profile_id', '=', result.attributes.id);
+                qb.max('version_number');
+                console.log(qb.toString());
+              })
+              .fetch()
+              .then(foundVer => {
+                console.log(foundVer.attributes);
+                return new version()
+                  .save({
+                    profile_id: result.attributes.id,
+                    version_number: foundVer.attributes.max + 1,
+                  })
+                  .then(function(ver) {})
+                  .catch(function(err) {
+                    console.log(err);
+                  });
+                return 'Saved!';
+              })
+              .catch(function(err) {
+                console.log(err);
+              });
+          }
         })
         .catch(function(err) {
           console.log(err);
         });
     });
-  console.log(credentials);
 };
 exports.registerUser = function registerUser(request, reply) {
   bcrypt.hash(request.payload.password, 10, function(err, hash) {
