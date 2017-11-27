@@ -28,9 +28,12 @@ class Profile extends React.Component {
       credentials: 'same-origin',
     }).then(response => {
       response.json().then(data => {
+        if (data.error) {
+          console.log(data);
+          return this.setState({ error: data.message });
+        }
         if (data) {
           this.setState(data);
-          console.log(this.state);
         } else {
           console.log('fetch else');
           this.setState({
@@ -84,18 +87,58 @@ class Profile extends React.Component {
       });
     });
   }
-  componentDidUpdate() {}
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.match.params.user !== this.props.match.params.user) {
+      fetch(`/api/profile/${this.props.match.params.user}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: localStorage.getItem('idtoken'),
+        },
+        credentials: 'same-origin',
+      }).then(response => {
+        response.json().then(data => {
+          if (data.error) {
+            console.log(data);
+            return this.setState({ error: data.message });
+          }
+          if (data) {
+            this.setState(data);
+            this.setState({ error: '' });
+          } else {
+            console.log('fetch else');
+            this.setState({
+              location: '',
+              bio: '',
+              favorite_game: '',
+              redirectToReferrer: false,
+            });
+          }
+        });
+      });
+    }
+  }
   componentWillUnmount() {}
   render() {
+    const canEdit =
+      this.props.match.params.user === localStorage.getItem('username')
+        ? ''
+        : { disabled: true };
     return (
       <div className="componentContainer">
         <div className="spacer" />
         <div className="loginContainer">
           <form className="login">
             <div>
+              {this.state.error ? (
+                <div className="validationErr">{this.state.error}</div>
+              ) : (
+                ''
+              )}
               <label htmlFor="location">Location</label>
               <div className="spacer" />
               <input
+                {...canEdit}
                 value={this.state.location}
                 onChange={this.handleChange}
                 name="location"
@@ -103,6 +146,7 @@ class Profile extends React.Component {
               <label htmlFor="favorite_game">Favorite Game</label>
               <div className="spacer" />
               <input
+                {...canEdit}
                 value={this.state.favorite_game}
                 onChange={this.handleChange}
                 name="favorite_game"
@@ -110,6 +154,7 @@ class Profile extends React.Component {
               <label htmlFor="bio">Bio</label>
               <div className="spacer" />
               <textarea
+                {...canEdit}
                 onChange={this.handleChange}
                 value={this.state.bio}
                 rows="10"
